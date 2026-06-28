@@ -1,0 +1,194 @@
+# 研究内容二 Pipeline v0.1
+
+## 目的
+
+本文件说明如何只实现和展示“研究内容二：用户状态到共情策略的映射”。
+
+当前第二部分 pipeline 的边界是：
+
+```text
+原始对话
++ 用户状态卡
++ ESConv 策略参考案例摘要
+-> 共情策略决策卡
+```
+
+它不负责生成最终回复，也不负责生成评价卡。最终回复和评价可以作为后续模块或答辩中的下游展示，但不是本模块的主要产出。
+
+## 为什么可以只做第二部分
+
+可以。因为研究内容二本身就是一个独立模块：它解决的问题不是“怎么把话说出来”，而是“在当前用户状态下，系统应该采用什么支持意图、什么共情策略、什么回应时机和强度”。
+
+因此答辩时可以把重点放在：
+
+- 输入：用户状态卡；
+- 依据：策略映射规则和 ESConv few-shot 策略参考；
+- 输出：共情策略决策卡；
+- 校验：策略是否与 golden case 的预期策略一致。
+
+## 当前脚本
+
+运行：
+
+```powershell
+python scripts\run_strategy_pipeline.py
+```
+
+默认输入：
+
+```text
+examples/test-cases-v0.1.json
+examples/strategy-references-v0.1.json
+```
+
+扩展测试集：
+
+```text
+examples/strategy-test-cases-expanded-v0.1.json
+```
+
+这份文件只用于第二部分策略决策测试，不包含行为回应卡和评价卡。运行时用 `--cases` 指定即可：
+
+```powershell
+python scripts\run_strategy_pipeline.py --cases examples\strategy-test-cases-expanded-v0.1.json
+```
+
+默认输出：
+
+```text
+reports/final/local/strategy_pipeline_report.json
+```
+
+脚本默认使用 `rules` 模式，即用本地规则模拟第二部分策略决策逻辑：
+
+```powershell
+python scripts\run_strategy_pipeline.py --mode rules
+```
+
+也可以使用 `mock` 模式，直接回放 golden case 中人工标注的策略决策卡：
+
+```powershell
+python scripts\run_strategy_pipeline.py --mode mock
+```
+
+`mock` 的作用是稳定演示接口和校验流程，不代表模型真的完成了推理。后续接入 API 时，只需要把 `rules/mock` 的输出替换成模型输出，校验逻辑仍然可以复用。
+
+## API 模式
+
+API 模式用于让大模型实际完成第二部分策略决策：
+
+```text
+原始对话
++ 用户状态卡
++ ESConv 策略参考摘要
+-> API
+-> 共情策略决策卡
+-> 本地校验
+```
+
+运行：
+
+```powershell
+python scripts\run_strategy_pipeline.py --mode api
+```
+
+需要先在仓库根目录配置 `.env`，格式见 `.env.example`：
+
+```text
+PURE_JADE_API_URL=https://api.openai.com/v1/chat/completions
+PURE_JADE_API_KEY=replace-with-your-api-key
+PURE_JADE_API_MODEL=replace-with-your-model
+```
+
+脚本使用 OpenAI-compatible chat-completions 请求格式。不同 API 供应商通常只需要替换 `PURE_JADE_API_URL` 和 `PURE_JADE_API_MODEL`。
+
+`PURE_JADE_API_URL` 可以写完整 endpoint，也可以写 base URL。比如：
+
+```text
+https://api.openai.com/v1/chat/completions
+https://api.deepseek.com
+```
+
+如果只写 base URL，脚本会自动追加 `/chat/completions`。
+
+如果供应商不支持 JSON mode，可以在 `.env` 中关闭：
+
+```text
+PURE_JADE_API_JSON_MODE=0
+```
+
+API 输出仍然会被本地校验器检查：
+
+- 是否是合法 JSON；
+- 是否包含策略决策卡必填字段；
+- 枚举值是否符合 Schema；
+- 高风险场景是否进入 `safety_override`；
+- `esconv_example_ids` 是否来自本次 prompt 提供的策略参考案例；
+- 核心策略字段是否与 golden case 预期一致。
+
+API 模式不要求 `esconv_example_ids` 与 golden case 完全同一组。原因是 ESConv 参考案例的选择属于上游检索/筛选过程；第二部分 API 的主要评价对象是 `support_intention`、`primary_strategy`、`secondary_strategy`、`response_timing`、`response_intensity` 和 `safety_override` 这些核心策略字段。
+
+API 模式失败时，报告中会保留每次尝试的原始输出和错误原因，方便调整 prompt。
+
+如果要展示“没有 ESConv 策略参考”的对照结果，可以运行：
+
+```powershell
+python scripts\run_strategy_pipeline.py --no-references --report reports\final\local\strategy_pipeline_no_references_report.json
+```
+
+API 模式同样支持这个对照：
+
+```powershell
+python scripts\run_strategy_pipeline.py --mode api --no-references --report reports\final\api\strategy_pipeline_api_no_references_report.json
+```
+
+扩展测试集的 API 对照命令：
+
+```powershell
+python scripts\run_strategy_pipeline.py --mode api --cases examples\strategy-test-cases-expanded-v0.1.json --report reports\final\api\strategy_pipeline_api_expanded_report.json
+
+python scripts\run_strategy_pipeline.py --mode api --no-references --cases examples\strategy-test-cases-expanded-v0.1.json --report reports\final\api\strategy_pipeline_api_expanded_no_references_report.json
+```
+
+## 只看第二部分时展示什么
+
+每个 case 展示四块即可：
+
+1. 用户原始输入；
+2. 用户状态卡；
+3. 选入 prompt 的 ESConv 策略参考摘要；
+4. 第二部分输出的共情策略决策卡。
+
+行为回应卡可以放在“下游模块示例”里，不要把它说成第二部分自己的主要成果。
+
+## ESConv 在这里的作用
+
+ESConv 不直接提供最终回复。它在本模块中只提供策略参考：
+
+- 哪类用户状态常对应哪类支持策略；
+- 什么情况下先澄清，什么情况下先安抚；
+- 什么情况下适合建议或信息支持；
+- 哪些策略容易不合适，例如过早建议、连续追问、空泛安慰。
+
+因此 prompt 中放入的是“策略参考案例摘要”，不是 ESConv 原始回复全文。
+
+## 与完整系统的关系
+
+完整系统可以长这样：
+
+```text
+用户输入
+-> 用户状态卡
+-> 共情策略决策卡
+-> 行为回应卡
+-> 评价卡
+```
+
+但当前可先只完成并验证：
+
+```text
+用户状态卡
+-> 共情策略决策卡
+```
+
+这样范围更清晰，也更符合当前分工。

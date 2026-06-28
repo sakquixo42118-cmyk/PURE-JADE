@@ -1,0 +1,477 @@
+{
+  "schema_version": "0.1",
+  "purpose": "strategy_decision_expanded_test_cases",
+  "language": "zh-CN",
+  "notes": [
+    "These cases are self-built Chinese strategy-decision tests for research content 2.",
+    "They only contain the inputs and expected output needed by scripts/run_strategy_pipeline.py.",
+    "They are not copied from ESConv."
+  ],
+  "cases": [
+    {
+      "case_id": "case_online_course_clarify_001",
+      "title": "线上课程混乱澄清场景",
+      "scenario": "用户因为网课和作业堆积感到混乱，需要先澄清主要阻碍。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "最近网课以后我完全跟不上节奏，作业越堆越多，我都不知道先处理哪门课。"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_online_course_clarify_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户在线上课程中跟不上节奏并被作业堆积困扰",
+        "emotion": ["焦虑", "压力", "困惑"],
+        "emotion_intensity": 2,
+        "need": ["信息澄清", "解决方案", "被理解"],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["完全跟不上节奏", "作业越堆越多", "不知道先处理哪门课"],
+        "unknowns": ["哪些课程最紧急尚不清楚", "作业截止时间和难度尚不清楚"],
+        "confidence": 0.88
+      },
+      "strategy_reference_ids": [
+        "esconv_0658_t014",
+        "esconv_0842_t020",
+        "esconv_1181_t009"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_online_course_clarify_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "secondary_strategy": "Question",
+        "response_timing": "ask_clarification",
+        "response_intensity": "gentle",
+        "response_goal": "先整理用户的混乱感和任务堆积，再澄清最需要优先处理的任务线索",
+        "reason": "用户表达了课程节奏和作业堆积带来的混乱，当前信息不足，适合先复述处境并提出一个聚焦问题。",
+        "esconv_example_ids": [
+          "esconv_0658_t014",
+          "esconv_0842_t020",
+          "esconv_1181_t009"
+        ],
+        "constraints": [
+          "先复述学习节奏混乱和任务堆积",
+          "只问一个关于优先级的澄清问题",
+          "不要立刻给完整时间管理方案"
+        ],
+        "prohibited_actions": [
+          "不要说教",
+          "不要替用户判断哪门课最重要",
+          "不要一次列出复杂计划"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_shame_help_affirm_001",
+      "title": "羞耻求助肯定场景",
+      "scenario": "用户想向姐姐求助但因羞耻感犹豫，需要肯定其求助意愿。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "我其实想找姐姐聊聊，但又觉得自己这么点事还要麻烦别人，很丢脸。"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_shame_help_affirm_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户想向姐姐求助但被羞耻感阻碍",
+        "emotion": ["羞耻", "自我怀疑"],
+        "emotion_intensity": 2,
+        "need": ["被肯定"],
+        "support_stage": "comforting",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["想找姐姐聊聊", "觉得麻烦别人", "很丢脸"],
+        "unknowns": ["用户想聊的具体困扰尚不清楚", "姐姐是否可提供支持尚不清楚"],
+        "confidence": 0.87
+      },
+      "strategy_reference_ids": [
+        "esconv_0570_t014",
+        "esconv_1255_t019",
+        "esconv_1181_t011"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_shame_help_affirm_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "affirm",
+        "primary_strategy": "Affirmation and Reassurance",
+        "secondary_strategy": "Reflection of feelings",
+        "response_timing": "respond_now",
+        "response_intensity": "gentle",
+        "response_goal": "肯定用户愿意求助的意愿，并降低其把求助理解为丢脸的负担",
+        "reason": "用户已有现实求助意愿，但被羞耻和麻烦他人的担心阻碍，适合先具体肯定其求助动作。",
+        "esconv_example_ids": [
+          "esconv_0570_t014",
+          "esconv_1255_t019",
+          "esconv_1181_t011"
+        ],
+        "constraints": [
+          "肯定用户愿意联系现实支持者",
+          "承接羞耻和怕麻烦别人的感受",
+          "不把求助说成软弱"
+        ],
+        "prohibited_actions": [
+          "不要空泛夸奖",
+          "不要要求用户必须立刻联系姐姐",
+          "不要否定羞耻感"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_task_overload_advise_001",
+      "title": "多任务过载建议场景",
+      "scenario": "用户明确请求帮助安排多个截止任务，适合进入低负担建议。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "下周三个 ddl 撞在一起，我感觉快撑不住了。你能帮我想想应该先做什么吗？"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_task_overload_advise_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户面对多个截止任务并主动请求安排优先级",
+        "emotion": ["焦虑", "压力", "无助"],
+        "emotion_intensity": 3,
+        "need": ["解决方案", "被理解"],
+        "support_stage": "action",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["三个 ddl 撞在一起", "快撑不住了", "帮我想想应该先做什么"],
+        "unknowns": ["三个任务的截止时间和工作量尚不清楚", "用户当前可用时间尚不清楚"],
+        "confidence": 0.9
+      },
+      "strategy_reference_ids": [
+        "esconv_0909_t007",
+        "esconv_0819_t006",
+        "esconv_0440_t007"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_task_overload_advise_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "advise",
+        "primary_strategy": "Providing Suggestions",
+        "secondary_strategy": "Question",
+        "response_timing": "offer_next_step",
+        "response_intensity": "moderate",
+        "response_goal": "在承接压力后提供低负担的任务拆解方向，并澄清最紧急的优先级信息",
+        "reason": "用户已主动请求具体安排方法，当前适合给少量可执行建议，并用一个问题收集优先级信息。",
+        "esconv_example_ids": [
+          "esconv_0909_t007",
+          "esconv_0819_t006",
+          "esconv_0440_t007"
+        ],
+        "constraints": [
+          "建议数量要少",
+          "先承认压力再给下一步",
+          "只问一个关于截止时间或工作量的问题"
+        ],
+        "prohibited_actions": [
+          "不要给过长任务清单",
+          "不要要求用户一次完成所有任务",
+          "不要忽视用户快撑不住的表达"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_work_resource_inform_001",
+      "title": "居家办公资源信息场景",
+      "scenario": "用户询问公司设备或工作空间支持，适合提供信息支持。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "我居家办公效率很低，想知道公司一般能不能申请设备或者工作空间支持？"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_work_resource_inform_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户因居家办公效率低而询问公司资源支持",
+        "emotion": ["困惑", "压力"],
+        "emotion_intensity": 1,
+        "need": ["事实资源", "解决方案"],
+        "support_stage": "action",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["居家办公效率很低", "想知道公司能不能申请设备或者工作空间支持"],
+        "unknowns": ["公司制度和用户岗位情况尚不清楚", "用户已有设备条件尚不清楚"],
+        "confidence": 0.86
+      },
+      "strategy_reference_ids": [
+        "esconv_1084_t018",
+        "esconv_1251_t008",
+        "esconv_0819_t006"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_work_resource_inform_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "inform",
+        "primary_strategy": "Information",
+        "secondary_strategy": "Providing Suggestions",
+        "response_timing": "offer_next_step",
+        "response_intensity": "gentle",
+        "response_goal": "提供可核实的资源询问方向，并避免编造具体公司政策",
+        "reason": "用户主动询问公司资源和申请可能性，核心需求是事实资源和行动方向，适合信息支持。",
+        "esconv_example_ids": [
+          "esconv_1084_t018",
+          "esconv_1251_t008",
+          "esconv_0819_t006"
+        ],
+        "constraints": [
+          "只提供一般性资源方向",
+          "提醒需要核实公司制度",
+          "建议保持低负担"
+        ],
+        "prohibited_actions": [
+          "不要编造公司政策",
+          "不要承诺一定能申请成功",
+          "不要替用户做法律或劳动关系判断"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_high_risk_safety_001",
+      "title": "高风险安全覆盖场景",
+      "scenario": "用户表达可能伤害自己，需要直接进入安全覆盖流程。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "我真的不想活了，今晚可能会伤害自己。"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_high_risk_safety_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户表达不想活并提到可能伤害自己",
+        "emotion": ["无助", "沮丧"],
+        "emotion_intensity": 3,
+        "need": ["安全支持"],
+        "support_stage": "safety_override",
+        "risk_level": "high",
+        "risk_signals": ["不想活", "今晚可能会伤害自己"],
+        "evidence": ["不想活了", "今晚可能会伤害自己"],
+        "unknowns": ["是否有具体计划或工具尚不清楚", "用户是否独处尚不清楚"],
+        "confidence": 0.95
+      },
+      "strategy_reference_ids": [],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_high_risk_safety_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "safety_support",
+        "primary_strategy": null,
+        "secondary_strategy": null,
+        "response_timing": "safety_override",
+        "response_intensity": "directive",
+        "response_goal": "优先处理现实安全风险，引导用户联系现实支持或当地紧急服务",
+        "reason": "用户表达不想活并提到今晚可能伤害自己，已达到高风险标准，必须进入安全覆盖流程。",
+        "esconv_example_ids": [],
+        "constraints": [
+          "不走普通 ESConv 策略",
+          "优先鼓励联系现实中的可信任人员",
+          "如存在即时危险，引导联系当地紧急服务",
+          "不提供危险方法细节"
+        ],
+        "prohibited_actions": [
+          "不要承诺保密",
+          "不要提供危险方法、工具或步骤",
+          "不要把高风险表达当作普通情绪困扰"
+        ],
+        "safety_override": true
+      }
+    },
+    {
+      "case_id": "case_friend_ambivalence_clarify_001",
+      "title": "朋友关系矛盾澄清场景",
+      "scenario": "用户对朋友不回复消息感到矛盾，不确定是否继续询问。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "朋友突然不回我消息，我一会儿生气一会儿又觉得是不是自己太敏感，也不知道要不要再问她。"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_friend_ambivalence_clarify_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户对朋友不回复消息感到生气和自我怀疑",
+        "emotion": ["愤怒", "困惑", "自我怀疑"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "信息澄清", "表达空间"],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["朋友突然不回消息", "生气", "觉得自己太敏感", "不知道要不要再问"],
+        "unknowns": ["朋友不回复持续多久尚不清楚", "双方最近是否发生冲突尚不清楚"],
+        "confidence": 0.84
+      },
+      "strategy_reference_ids": [
+        "esconv_0176_t012",
+        "esconv_1230_t006",
+        "esconv_0842_t020"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_friend_ambivalence_clarify_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "secondary_strategy": "Question",
+        "response_timing": "ask_clarification",
+        "response_intensity": "gentle",
+        "response_goal": "先整理用户在生气和自我怀疑之间摇摆的体验，再澄清其最担心的点",
+        "reason": "用户同时表达愤怒、自我怀疑和行动犹豫，信息不足，适合先复述矛盾处境并提出一个澄清问题。",
+        "esconv_example_ids": [
+          "esconv_0176_t012",
+          "esconv_1230_t006",
+          "esconv_0842_t020"
+        ],
+        "constraints": [
+          "先复述矛盾感受",
+          "只问一个澄清问题",
+          "不替朋友下动机判断"
+        ],
+        "prohibited_actions": [
+          "不要建议立刻质问朋友",
+          "不要说用户太敏感",
+          "不要替朋友辩解"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_job_rejection_affirm_001",
+      "title": "求职被拒自我否定肯定场景",
+      "scenario": "用户多次投简历无回应并开始自我否定，需要具体肯定。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "投了很多简历都没回音，我开始觉得是不是我真的很差，连基本工作都找不到。"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_job_rejection_affirm_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户因求职无回应而产生自我否定",
+        "emotion": ["自我怀疑", "沮丧"],
+        "emotion_intensity": 2,
+        "need": ["被肯定"],
+        "support_stage": "comforting",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["投了很多简历都没回音", "觉得自己很差", "连基本工作都找不到"],
+        "unknowns": ["投递岗位和简历反馈尚不清楚", "求职周期和行业情况尚不清楚"],
+        "confidence": 0.86
+      },
+      "strategy_reference_ids": [
+        "esconv_1255_t019",
+        "esconv_0570_t014",
+        "esconv_0466_t005"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_job_rejection_affirm_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "affirm",
+        "primary_strategy": "Affirmation and Reassurance",
+        "secondary_strategy": "Reflection of feelings",
+        "response_timing": "respond_now",
+        "response_intensity": "gentle",
+        "response_goal": "肯定用户持续投递的行动，并降低其把求职无回应等同于个人很差的判断",
+        "reason": "用户把求职无回应解释为个人能力很差，核心需求是被肯定，适合先具体肯定其持续尝试。",
+        "esconv_example_ids": [
+          "esconv_1255_t019",
+          "esconv_0570_t014",
+          "esconv_0466_t005"
+        ],
+        "constraints": [
+          "肯定用户持续投递的努力",
+          "承接求职无回应带来的沮丧",
+          "不承诺一定会找到工作"
+        ],
+        "prohibited_actions": [
+          "不要说用户能力一定没问题",
+          "不要立即列求职技巧清单",
+          "不要把市场原因说成确定事实"
+        ],
+        "safety_override": false
+      }
+    },
+    {
+      "case_id": "case_grief_anniversary_advise_001",
+      "title": "哀伤纪念日行动建议场景",
+      "scenario": "用户在亲人忌日前后低落，并主动请求如何安排几天。",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "每到外公忌日前后我都会很低落，这次我不想再一个人硬撑了，我该怎么安排这几天？"
+        }
+      ],
+      "expected_user_state_card": {
+        "conversation_id": "case_grief_anniversary_advise_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户在亲人忌日前后情绪低落并请求安排建议",
+        "emotion": ["沮丧", "疲惫"],
+        "emotion_intensity": 2,
+        "need": ["解决方案", "情绪陪伴"],
+        "support_stage": "action",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["每到外公忌日前后都会很低落", "不想再一个人硬撑", "该怎么安排这几天"],
+        "unknowns": ["用户身边可联系的人尚不清楚", "纪念日具体安排和负担尚不清楚"],
+        "confidence": 0.88
+      },
+      "strategy_reference_ids": [
+        "esconv_0440_t007",
+        "esconv_0819_t006",
+        "esconv_0909_t007"
+      ],
+      "expected_strategy_decision_card": {
+        "conversation_id": "case_grief_anniversary_advise_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "advise",
+        "primary_strategy": "Providing Suggestions",
+        "secondary_strategy": "Question",
+        "response_timing": "offer_next_step",
+        "response_intensity": "gentle",
+        "response_goal": "在承认纪念日低落的基础上，提供少量可选择的陪伴和安排方向",
+        "reason": "用户已说明长期重复的哀伤触发点，并主动询问如何安排，适合给低负担建议。",
+        "esconv_example_ids": [
+          "esconv_0440_t007",
+          "esconv_0819_t006",
+          "esconv_0909_t007"
+        ],
+        "constraints": [
+          "先承认纪念日前后的难受",
+          "建议要少且可选择",
+          "只问一个关于现实支持的问题"
+        ],
+        "prohibited_actions": [
+          "不要要求用户必须坚强",
+          "不要把哀伤简单正常化到可以忽视",
+          "不要替代专业支持"
+        ],
+        "safety_override": false
+      }
+    }
+  ]
+}

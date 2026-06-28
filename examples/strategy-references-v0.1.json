@@ -1,0 +1,336 @@
+{
+  "schema_version": "0.1",
+  "purpose": "strategy_decision_few_shot",
+  "source_dataset": "ESConv",
+  "source_policy": "summary_only_no_original_response",
+  "usage_scope": "strategy_decision_prompt_only",
+  "notes": [
+    "These examples are manually curated references derived from ESConv.",
+    "Do not include ESConv original supporter responses in the final response generation prompt.",
+    "Use at most 2-3 relevant examples per strategy decision request."
+  ],
+  "examples": [
+    {
+      "example_id": "esconv_0176_t012",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "problems with friends",
+      "emotion_type": "sadness",
+      "situation_summary_zh": "用户为了保护家人而减少线下社交，朋友逐渐不再联系，用户感到被排除和孤立。",
+      "inferred_user_state": {
+        "emotion": ["孤独", "沮丧"],
+        "need": ["信息澄清", "解决方案"],
+        "support_stage": "exploration"
+      },
+      "strategy_reference": {
+        "support_intention": "clarify",
+        "primary_strategy": "Question",
+        "strategy_reason": "用户已经说明自己不想继续单方面联系，但还不清楚是否存在其他可支持的人际资源。",
+        "response_pattern": "先承接被疏远的感受，再提出一个关于其他朋友或同样保持防护的人际资源的开放问题。"
+      },
+      "prompt_use_notes": [
+        "适合朋友疏远、孤独、但信息仍不足的场景。",
+        "问题应聚焦一个可行动的澄清点，不连续追问。"
+      ]
+    },
+    {
+      "example_id": "esconv_0658_t014",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "academic pressure",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户因课程转为线上而难以跟上进度，成绩下降，并担心自己无法继续学业。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "压力"],
+        "need": ["信息澄清", "解决方案"],
+        "support_stage": "exploration"
+      },
+      "strategy_reference": {
+        "support_intention": "clarify",
+        "primary_strategy": "Question",
+        "strategy_reason": "用户希望改善学习状态，但具体阻碍尚不清楚，需要先识别造成混乱或拖延的关键原因。",
+        "response_pattern": "围绕一个具体障碍提问，例如时间安排、起床困难、课程节奏或任务优先级。"
+      },
+      "prompt_use_notes": [
+        "适合学习挫败和线上学习压力场景。",
+        "先问原因，再决定是否进入建议阶段。"
+      ]
+    },
+    {
+      "example_id": "esconv_0842_t020",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "ongoing depression",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户因疫情后的生活节奏变化失去运动和日常安排，感到拖延、内疚和不够有效率。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "自我怀疑", "压力"],
+        "need": ["被理解", "信息澄清"],
+        "support_stage": "exploration"
+      },
+      "strategy_reference": {
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "strategy_reason": "用户连续表达多个相关困扰，先复述其核心模式有助于把零散情绪整理成可讨论的问题。",
+        "response_pattern": "把用户的零散描述概括为一个清晰模式，再确认这种理解是否贴近用户。"
+      },
+      "prompt_use_notes": [
+        "适合用户说了很多但主线不清的场景。",
+        "不要急于建议，先帮助用户看见问题结构。"
+      ]
+    },
+    {
+      "example_id": "esconv_1230_t006",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "breakup with partner",
+      "emotion_type": "sadness",
+      "situation_summary_zh": "用户被交往一年的伴侣通过短信分手，感到突然、受伤，并困惑于双方对婚姻期待不同。",
+      "inferred_user_state": {
+        "emotion": ["沮丧", "困惑"],
+        "need": ["被理解", "信息澄清"],
+        "support_stage": "exploration"
+      },
+      "strategy_reference": {
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "strategy_reason": "用户同时承受被短信分手的受伤感和未来目标不一致的困惑，需要先复述并确认关键冲突点。",
+        "response_pattern": "先概括伤害来源和关系目标差异，再提出一个确认原因的单一问题。"
+      },
+      "prompt_use_notes": [
+        "适合关系冲突、分手和价值期待不一致场景。",
+        "避免替用户判断伴侣人格。"
+      ]
+    },
+    {
+      "example_id": "esconv_0466_t005",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "job crisis",
+      "emotion_type": "sadness",
+      "situation_summary_zh": "用户因疫情下的工作安全和失业风险感到焦虑、压力和低落。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "沮丧", "压力"],
+        "need": ["被理解", "被肯定"],
+        "support_stage": "comforting"
+      },
+      "strategy_reference": {
+        "support_intention": "comfort",
+        "primary_strategy": "Reflection of feelings",
+        "strategy_reason": "用户直接表达焦虑和压力，当前更需要情绪被看见，而不是立刻进入解决方案。",
+        "response_pattern": "明确点出用户正在承受的压力和不安，再表达这种反应是可以理解的。"
+      },
+      "prompt_use_notes": [
+        "适合工作不确定性、压力和焦虑场景。",
+        "不要直接给职业建议，除非用户主动询问。"
+      ]
+    },
+    {
+      "example_id": "esconv_1181_t009",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "academic pressure",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户在研究生项目中感到自己不够好，担心达不到要求并让家人失望。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "自我怀疑"],
+        "need": ["被理解", "信息澄清"],
+        "support_stage": "comforting"
+      },
+      "strategy_reference": {
+        "support_intention": "comfort",
+        "primary_strategy": "Reflection of feelings",
+        "strategy_reason": "用户的核心困扰是对自身能力的担忧和反复自我怀疑，需要先反映这种焦虑，再轻量探索触发因素。",
+        "response_pattern": "先反映担忧和自我怀疑，再用一个问题了解这种怀疑来自具体事件还是长期倾向。"
+      },
+      "prompt_use_notes": [
+        "适合学习压力、自我怀疑和能力焦虑场景。",
+        "可以配合一个澄清问题，但情绪承接应放在前面。"
+      ]
+    },
+    {
+      "example_id": "esconv_0570_t014",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "ongoing depression",
+      "emotion_type": "depression",
+      "situation_summary_zh": "用户觉得生活陷入停滞，正在考虑向姐姐求助，同时为自己的不开心感到羞耻。",
+      "inferred_user_state": {
+        "emotion": ["羞耻", "沮丧"],
+        "need": ["被肯定", "情绪陪伴"],
+        "support_stage": "comforting"
+      },
+      "strategy_reference": {
+        "support_intention": "affirm",
+        "primary_strategy": "Affirmation and Reassurance",
+        "strategy_reason": "用户已经出现主动求助意愿，但被羞耻感阻碍，需要肯定其迈出求助一步的价值。",
+        "response_pattern": "肯定用户愿意联系现实支持者的行动，再降低其为痛苦感到羞耻的负担。"
+      },
+      "prompt_use_notes": [
+        "适合自我否定、羞耻和准备求助的场景。",
+        "肯定必须具体，不要空泛夸奖。"
+      ]
+    },
+    {
+      "example_id": "esconv_1255_t019",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "job crisis",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户因收入不确定和经济压力感到焦虑，虽然努力保持积极，但觉得自己正在失败。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "自我怀疑", "压力"],
+        "need": ["被肯定", "情绪陪伴"],
+        "support_stage": "comforting"
+      },
+      "strategy_reference": {
+        "support_intention": "affirm",
+        "primary_strategy": "Affirmation and Reassurance",
+        "strategy_reason": "用户把暂时困境解释为个人失败，需要把关注点转回其仍在努力应对这一事实。",
+        "response_pattern": "肯定用户仍在坚持和尝试，再提供一个低负担的稳定情绪方式。"
+      },
+      "prompt_use_notes": [
+        "适合经济压力、工作不确定性和失败感场景。",
+        "不要承诺外部帮助一定会到来。"
+      ]
+    },
+    {
+      "example_id": "esconv_0440_t007",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "ongoing depression",
+      "emotion_type": "depression",
+      "situation_summary_zh": "用户每年特定时期都会因亲人离世回忆而情绪低落，并习惯用忙碌或节日准备隐藏悲伤。",
+      "inferred_user_state": {
+        "emotion": ["沮丧", "疲惫"],
+        "need": ["情绪陪伴", "解决方案"],
+        "support_stage": "action"
+      },
+      "strategy_reference": {
+        "support_intention": "advise",
+        "primary_strategy": "Providing Suggestions",
+        "strategy_reason": "用户已经说明长期重复出现的困难，可以给出低门槛、非强迫性的情绪表达建议。",
+        "response_pattern": "先承认这一时期很难，再建议把悲伤与可信任家人分享，而不是继续独自隐藏。"
+      },
+      "prompt_use_notes": [
+        "适合用户已描述清楚问题并需要下一步时使用。",
+        "建议要温和、可选择，不替代专业支持。"
+      ]
+    },
+    {
+      "example_id": "esconv_0819_t006",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "job crisis",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户得知职位可能被取消，同时承担交接责任，感到任务和失业压力一起压来。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "压力"],
+        "need": ["解决方案", "情绪陪伴"],
+        "support_stage": "action"
+      },
+      "strategy_reference": {
+        "support_intention": "advise",
+        "primary_strategy": "Providing Suggestions",
+        "strategy_reason": "用户面对多个现实压力点，适合把问题拆成更可管理的小步骤，并询问现实支持资源。",
+        "response_pattern": "先总结压力来源，再建议拆解任务、降低负担，并询问是否有可协助的人。"
+      },
+      "prompt_use_notes": [
+        "适合现实任务过载和工作危机场景。",
+        "建议数量应少，避免增加用户负担。"
+      ]
+    },
+    {
+      "example_id": "esconv_1084_t018",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "job crisis",
+      "emotion_type": "depression",
+      "situation_summary_zh": "用户因长期居家办公安排而失去原有工作边界和社交节奏，想知道如何改善工作状态。",
+      "inferred_user_state": {
+        "emotion": ["沮丧", "压力"],
+        "need": ["事实资源", "解决方案"],
+        "support_stage": "action"
+      },
+      "strategy_reference": {
+        "support_intention": "inform",
+        "primary_strategy": "Information",
+        "strategy_reason": "用户的问题涉及工作条件和资源支持，适合提供可核实、低风险的资源方向。",
+        "response_pattern": "提供一般性信息或资源方向，例如改善工作空间、询问公司是否能提供设备支持。"
+      },
+      "prompt_use_notes": [
+        "适合用户询问资源、流程或现实条件的场景。",
+        "不要编造具体政策或不可核实资源。"
+      ]
+    },
+    {
+      "example_id": "esconv_1251_t008",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "job crisis",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户觉得自己在工作中被忽视，担心晋升或加薪无望，也不知道如何表达诉求。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "自我怀疑"],
+        "need": ["事实资源", "信息澄清"],
+        "support_stage": "action"
+      },
+      "strategy_reference": {
+        "support_intention": "inform",
+        "primary_strategy": "Information",
+        "strategy_reason": "用户需要知道是否存在中间沟通渠道或组织资源，而不是只获得情绪安慰。",
+        "response_pattern": "提出可查证的资源方向，例如中间人、同事支持、HR 或工会等，但不替用户下结论。"
+      },
+      "prompt_use_notes": [
+        "适合职场沟通和资源查询场景。",
+        "信息类回答必须保守，避免编造具体制度。"
+      ]
+    },
+    {
+      "example_id": "esconv_1181_t011",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "academic pressure",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户在博士或研究生项目中反复自我怀疑，担心自己无法达到标准并辜负家人。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "自我怀疑"],
+        "need": ["被理解", "被肯定"],
+        "support_stage": "comforting"
+      },
+      "strategy_reference": {
+        "support_intention": "normalize",
+        "primary_strategy": "Self-disclosure",
+        "strategy_reason": "用户感到自己孤立且不够好，简短自我披露可以降低孤立感，但必须回到用户的努力和进步。",
+        "response_pattern": "简短说明类似自我怀疑并不罕见，再把重点转回用户已经在努力前进的小步骤。"
+      },
+      "prompt_use_notes": [
+        "适合学习压力和能力焦虑场景。",
+        "自我披露必须短，不能把焦点转向支持者。"
+      ]
+    },
+    {
+      "example_id": "esconv_0909_t007",
+      "source": "ESConv",
+      "source_policy": "summary_only_no_original_response",
+      "problem_type": "academic pressure",
+      "emotion_type": "anxiety",
+      "situation_summary_zh": "用户同时面对学业项目、时间压力和生活平衡问题，感到快要撑不住并主动询问该怎么办。",
+      "inferred_user_state": {
+        "emotion": ["焦虑", "压力", "无助"],
+        "need": ["解决方案", "被理解"],
+        "support_stage": "action"
+      },
+      "strategy_reference": {
+        "support_intention": "normalize",
+        "primary_strategy": "Self-disclosure",
+        "strategy_reason": "用户主动请求方法，简短分享个人整理压力的方法可以作为低门槛建议，但仍应服务于用户当前任务管理。",
+        "response_pattern": "用一句简短自我经验引出方法，再给出可执行的压力整理步骤，例如列出任务并排序。"
+      },
+      "prompt_use_notes": [
+        "适合压力过载且用户主动求助的场景。",
+        "自我披露要和可执行建议绑定，避免变成讲自己的故事。"
+      ]
+    }
+  ]
+}
