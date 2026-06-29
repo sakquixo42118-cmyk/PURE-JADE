@@ -40,7 +40,9 @@ PURE-JADE
 
 ## 当前优先级
 
-1. 先维护 `docs/schema-v0.1.md`，冻结四张卡片的字段、枚举和校验规则。
-2. 再维护 `docs/strategy-mapping.md`，推进研究内容二的策略映射和 Prompt。
-3. 在协议稳定前，不要直接大规模实现 Demo。
-4. 涉及高风险表达时，安全流程优先于普通 ESConv 策略流程。
+1. `docs/schema-v0.1.md` 继续作为单轮 golden case 和当前第二部分测试的稳定协议。
+2. `docs/schema-v0.2.md` 用于多轮对话，重点维护状态继承、状态修正、风险记忆和上下文连续性字段。
+3. `docs/schema-v0.2.1.md` 用于多轮实现契约，重点维护状态更新请求、本地 conversation record 和滚动摘要来源。
+4. 再维护 `docs/strategy-mapping.md`，推进研究内容二的策略映射和 Prompt。
+5. 在协议稳定前，不要直接大规模实现 Demo。
+6. 涉及高风险表达时，安全流程优先于普通 ESConv 策略流程。

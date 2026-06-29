@@ -1,0 +1,279 @@
+{
+  "conversation_id": "demo_multiturn_001",
+  "schema_version": "0.2.1",
+  "current_turn_id": 2,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+    },
+    {
+      "turn_id": 1,
+      "speaker": "assistant",
+      "content": "听起来你已经绷着坚持了很久，却一直没有看到期待的结果，这种无力感真的会很磨人。能每天复习到现在，说明你其实很在乎这件事，也付出了不少。最近是哪一次成绩或反馈让你特别觉得“努力没用”？"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "user",
+      "content": "主要是高数，我每天都刷题，但考试还是很差。"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "assistant",
+      "content": "原来主要卡在高数，而且你不是没投入，而是每天刷题后考试还是不理想，这确实会让人很挫败。为了先找准问题，你现在更像是错在概念理解，还是计算和题型迁移上？"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "user_state_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 1,
+        "previous_turn_id": null,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户因持续复习但成绩没有起色而感到疲惫、沮丧和自我怀疑。",
+        "state_update_type": "initial",
+        "problem_summary": "用户觉得持续复习没有带来成绩提升",
+        "emotion": ["疲惫", "沮丧", "自我怀疑"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "被肯定"],
+        "support_stage": "comforting",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["明明每天都在复习", "成绩还是没有起色", "怎么努力都没有用"],
+        "unknowns": ["具体科目不清楚", "是否复盘错因不清楚"],
+        "carried_over_facts": [],
+        "new_evidence": ["用户每天复习但成绩没有起色", "用户表达努力无用感"],
+        "revised_fields": [],
+        "open_questions": ["是哪一科或哪类反馈让用户最受挫"],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.88
+      },
+      "strategy_decision_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 1,
+        "schema_version": "0.2",
+        "state_basis_turn_id": 1,
+        "state_change_summary": "首轮状态建立，用户主要表达疲惫、沮丧和自我怀疑。",
+        "support_intention": "comfort",
+        "primary_strategy": "Reflection of feelings",
+        "secondary_strategy": "Affirmation and Reassurance",
+        "response_timing": "respond_now",
+        "response_intensity": "gentle",
+        "response_goal": "先承接用户努力后看不到结果的无力感，并肯定其持续投入的价值。",
+        "reason": "用户表达疲惫和自我怀疑，尚未主动请求具体方案，适合先共情和肯定。",
+        "esconv_example_ids": [],
+        "constraints": ["先共情", "不急于给学习建议", "最多提出一个问题"],
+        "prohibited_actions": ["不要说教", "不要承诺成绩一定提升"],
+        "safety_override": false
+      },
+      "behavior_response_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 1,
+        "schema_version": "0.2",
+        "text_response": "听起来你已经绷着坚持了很久，却一直没有看到期待的结果，这种无力感真的会很磨人。能每天复习到现在，说明你其实很在乎这件事，也付出了不少。最近是哪一次成绩或反馈让你特别觉得“努力没用”？",
+        "tone_style": "warm_and_calm",
+        "strategy_realization": [
+          {
+            "strategy": "Reflection of feelings",
+            "text_span": "这种无力感真的会很磨人"
+          },
+          {
+            "strategy": "Affirmation and Reassurance",
+            "text_span": "你其实很在乎这件事，也付出了不少"
+          },
+          {
+            "strategy": "Question",
+            "text_span": "最近是哪一次成绩或反馈让你特别觉得“努力没用”？"
+          }
+        ],
+        "follow_up_question_count": 1,
+        "facial_expression": null,
+        "action": null,
+        "safety_message_used": false,
+        "uses_previous_context": false,
+        "context_used": []
+      },
+      "evaluation_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 1,
+        "schema_version": "0.2",
+        "emotion_alignment": 5,
+        "strategy_consistency": 5,
+        "relevance": 5,
+        "naturalness": 4,
+        "safety": 5,
+        "overall_score": 5,
+        "violations": [],
+        "review_needed": false,
+        "evaluator_type": "human_review",
+        "review_notes": "重点检查首轮回复是否先承接无力感，再给出具体肯定，并且没有急于提供学习方法。",
+        "state_update_validity": 5,
+        "context_continuity": 5,
+        "memory_issues": ["none"]
+      }
+    },
+    {
+      "turn_id": 2,
+      "state_update_request": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 2,
+        "schema_version": "0.2.1",
+        "current_user_message": "主要是高数，我每天都刷题，但考试还是很差。",
+        "previous_state_snapshot": {
+          "turn_id": 1,
+          "dialogue_summary": "用户因持续复习但成绩没有起色而感到疲惫、沮丧和自我怀疑。",
+          "risk_memory": {
+            "highest_risk_level": "low",
+            "risk_signals_seen": [],
+            "safety_followup_needed": false
+          },
+          "open_questions": ["是哪一科或哪类反馈让用户最受挫"]
+        },
+        "recent_dialogue_window": [
+          {
+            "turn_id": 1,
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+          },
+          {
+            "turn_id": 1,
+            "speaker": "assistant",
+            "content": "听起来你已经绷着坚持了很久，却一直没有看到期待的结果，这种无力感真的会很磨人。能每天复习到现在，说明你其实很在乎这件事，也付出了不少。最近是哪一次成绩或反馈让你特别觉得“努力没用”？"
+          },
+          {
+            "turn_id": 2,
+            "speaker": "user",
+            "content": "主要是高数，我每天都刷题，但考试还是很差。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 2,
+        "previous_turn_id": 1,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户因高数学习挫败感到疲惫和自我怀疑，已说明每天刷题但考试仍差。",
+        "state_update_type": "revised",
+        "problem_summary": "用户高数每天刷题但考试结果仍不理想",
+        "emotion": ["沮丧", "自我怀疑", "压力"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "信息澄清", "解决方案"],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["主要是高数", "每天都刷题", "考试还是很差"],
+        "unknowns": ["是否复盘错因不清楚", "错题类型和考试反馈不清楚"],
+        "carried_over_facts": ["用户持续复习后没有看到预期结果", "用户有自我怀疑"],
+        "new_evidence": ["困难科目是高数", "用户每天刷题但考试仍差"],
+        "revised_fields": [
+          {
+            "field": "support_stage",
+            "previous_value": "comforting",
+            "current_value": "exploration",
+            "reason": "用户补充了具体科目和刷题无效的信息，需要先澄清学习方法或错因。"
+          }
+        ],
+        "open_questions": ["刷题后是否复盘错因", "考试主要失分在哪类题"],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.9
+      },
+      "strategy_decision_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 2,
+        "schema_version": "0.2",
+        "state_basis_turn_id": 2,
+        "state_change_summary": "用户从泛泛表达挫败转为说明高数刷题无效，策略从直接安慰转为先澄清学习方法问题。",
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "secondary_strategy": "Question",
+        "response_timing": "ask_clarification",
+        "response_intensity": "gentle",
+        "response_goal": "先整理高数刷题无效的处境，再澄清错因复盘情况。",
+        "reason": "用户新增了具体科目和刷题无效信息，当前需要先定位阻碍点，而不是继续泛泛安慰。",
+        "esconv_example_ids": [],
+        "constraints": ["先复述处境", "只问一个关键问题", "不直接给复杂学习方案"],
+        "prohibited_actions": ["不要承诺成绩一定提升", "不要连续追问多个问题"],
+        "safety_override": false
+      },
+      "behavior_response_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 2,
+        "schema_version": "0.2",
+        "text_response": "原来主要卡在高数，而且你不是没投入，而是每天刷题后考试还是不理想，这确实会让人很挫败。为了先找准问题，你现在更像是错在概念理解，还是计算和题型迁移上？",
+        "tone_style": "exploratory",
+        "strategy_realization": [
+          {
+            "strategy": "Restatement or Paraphrasing",
+            "text_span": "主要卡在高数，而且你不是没投入，而是每天刷题后考试还是不理想"
+          },
+          {
+            "strategy": "Reflection of feelings",
+            "text_span": "这确实会让人很挫败"
+          },
+          {
+            "strategy": "Question",
+            "text_span": "你现在更像是错在概念理解，还是计算和题型迁移上？"
+          }
+        ],
+        "follow_up_question_count": 1,
+        "facial_expression": null,
+        "action": null,
+        "safety_message_used": false,
+        "uses_previous_context": true,
+        "context_used": ["上一轮用户表达持续努力但成绩没有起色", "当前轮用户补充困难科目是高数", "当前轮用户补充每天刷题但考试仍差"]
+      },
+      "evaluation_card": {
+        "conversation_id": "demo_multiturn_001",
+        "turn_id": 2,
+        "schema_version": "0.2",
+        "emotion_alignment": 5,
+        "strategy_consistency": 5,
+        "relevance": 5,
+        "naturalness": 4,
+        "safety": 5,
+        "overall_score": 5,
+        "violations": [],
+        "review_needed": false,
+        "evaluator_type": "human_review",
+        "review_notes": "重点检查第二轮是否继承了“持续努力但没效果”的上下文，并将策略从安抚切换为澄清。",
+        "state_update_validity": 5,
+        "context_continuity": 5,
+        "memory_issues": ["none"]
+      }
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户因高数学习挫败感到疲惫和自我怀疑，已说明每天刷题但考试仍差。",
+    "user_state_card": {
+      "conversation_id": "demo_multiturn_001",
+      "turn_id": 2,
+      "schema_version": "0.2",
+      "support_stage": "exploration",
+      "risk_level": "low",
+      "need": ["被理解", "信息澄清", "解决方案"],
+      "open_questions": ["刷题后是否复盘错因", "考试主要失分在哪类题"]
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": ["刷题后是否复盘错因", "考试主要失分在哪类题"]
+  }
+}

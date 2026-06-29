@@ -86,6 +86,8 @@ API 模式用于让大模型实际完成第二部分策略决策：
 -> 本地校验
 ```
 
+API 配置、HTTP 请求和 JSON 解析已封装在 `scripts/pure_jade_api.py`；组员可先按 `docs/api-integration.md` 运行 `scripts/api_smoke_test.py` 检查配置和连通性。
+
 运行：
 
 ```powershell
@@ -192,3 +194,102 @@ ESConv 不直接提供最终回复。它在本模块中只提供策略参考：
 ```
 
 这样范围更清晰，也更符合当前分工。
+
+## v0.2 多轮输入
+
+`docs/schema-v0.2.md` 增加了多轮状态更新字段。第二部分的职责不变，仍然是输出共情策略决策卡；变化在于输入应使用“最新用户状态卡”，而不是只看当前一句话。
+
+多轮时推荐输入：
+
+```text
+历史摘要
++ 最新 user_state_card v0.2
++ 当前用户输入
++ ESConv 策略参考摘要
+-> strategy_decision_card v0.2
+```
+
+第二部分需要响应第一部分更新后的状态变化，例如：
+
+- `support_stage` 从 `comforting` 变成 `exploration` 时，策略可从直接安慰切到澄清；
+- `need` 新增 `解决方案` 或 `事实资源` 时，策略可逐步靠近建议或信息支持；
+- `risk_level` 上升时，必须进入 `safety_override`。
+
+v0.1 测试仍保留为单轮基线；v0.2 后续应新增多轮测试集，参考 `examples/multiturn-test-cases-v0.2.json`。
+
+`docs/schema-v0.2.1.md` 进一步明确了多轮实现契约：
+
+```text
+第一部分状态更新 API:
+previous_state_snapshot + recent_dialogue_window + current_user_message
+-> updated_user_state_card
+
+第二部分策略决策 API:
+latest_user_state_card + current_user_message + strategy_references
+-> strategy_decision_card
+```
+
+程序还需要本地维护 `conversation_record`，保存完整 `dialogue_log`、每轮 `turn_records` 和下一轮要读取的 `current_state`。示例见 `examples/conversation-record-v0.2.1.json`。
+
+## v0.2.1 第二部分脚本
+
+`scripts/run_strategy_pipeline_v021.py` 用于先跑通多轮协议下的第二部分策略决策。它不生成用户状态卡，也不生成最终回复或评价卡；它只从 `conversation_record` 中读取目标轮次的最新状态卡，并构造：
+
+```text
+current_user_message
++ latest_user_state_card
++ strategy_references
+-> strategy_decision_card v0.2
+```
+
+默认运行第 2 轮示例：
+
+```powershell
+python scripts\run_strategy_pipeline_v021.py
+```
+
+默认输入：
+
+```text
+examples/conversation-record-v0.2.1.json
+examples/strategy-references-v0.1.json
+```
+
+默认输出：
+
+```text
+reports/final/local/strategy_pipeline_v021_rules_turn2_report.json
+```
+
+默认报告名会自动带上 `mode` 和 `turn_id`。例如第 1 轮和第 2 轮会分别写入：
+
+```text
+reports/final/local/strategy_pipeline_v021_rules_turn1_report.json
+reports/final/local/strategy_pipeline_v021_rules_turn2_report.json
+```
+
+也可以直接回放 record 中已有的策略卡：
+
+```powershell
+python scripts\run_strategy_pipeline_v021.py --mode mock --report reports\final\local\strategy_pipeline_v021_mock_report.json
+```
+
+如果要指定轮次或手动指定 ESConv 参考案例：
+
+```powershell
+python scripts\run_strategy_pipeline_v021.py --turn-id 2 --reference-id esconv_1230_t006
+```
+
+API 模式沿用 `.env` 中的 OpenAI-compatible 配置：
+
+```powershell
+python scripts\run_strategy_pipeline_v021.py --mode api
+```
+
+API 模式同样会自动按轮次命名报告：
+
+```text
+reports/final/api/strategy_pipeline_v021_api_turn2_report.json
+```
+
+这一步的意义是先证明第二部分已经能接 v0.2.1 的 `conversation_record`，而不是继续依赖 v0.1 的单轮 golden case 文件。
