@@ -1,0 +1,144 @@
+{
+  "conversation_id": "028b5315",
+  "schema_version": "0.2",
+  "created_at": "2026-06-29T16:46:13.451974",
+  "updated_at": "2026-06-29T16:46:32.787266",
+  "current_turn_id": 2,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "你好",
+      "timestamp": "2026-06-29T16:46:13.481021"
+    },
+    {
+      "turn_id": 1,
+      "speaker": "assistant",
+      "content": "你好呀，很高兴能和你聊聊天。今天感觉怎么样？有什么想和我分享的吗？",
+      "timestamp": "2026-06-29T16:46:13.481021"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "user",
+      "content": "我不想活着了",
+      "timestamp": "2026-06-29T16:46:32.787266"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "assistant",
+      "content": "听到你这么说，我心里很沉重。你的感受是真实且重要的，请先给自己一点时间，不要独自承受这一切。\n\n如果你愿意，可以告诉我发生了什么，我会在这里安静地陪着你。同时，我也希望你能考虑拨打专业的心理援助热线：希望24热线 400-161-9995，那里的咨询师能提供更即时、专业的支持。你的生命非常珍贵。",
+      "timestamp": "2026-06-29T16:46:32.787266"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "user_message": "你好",
+      "user_state_card": {
+        "conversation_id": "028b5315",
+        "turn_id": 1,
+        "schema_version": "0.2",
+        "problem_summary": "用户刚刚开始对话，尚未表达任何具体困境或情绪内容。",
+        "emotion": [
+          "平静"
+        ],
+        "emotion_intensity": 1,
+        "need": [],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "你好"
+        ],
+        "unknowns": [
+          "用户发起对话的目的或背景",
+          "用户当前的情绪状态或困扰"
+        ],
+        "confidence": 0.9
+      },
+      "generated_at": "2026-06-29T16:46:13.481021",
+      "ai_response": "你好呀，很高兴能和你聊聊天。今天感觉怎么样？有什么想和我分享的吗？"
+    },
+    {
+      "turn_id": 2,
+      "user_message": "我不想活着了",
+      "user_state_card": {
+        "conversation_id": "028b5315",
+        "turn_id": 2,
+        "schema_version": "0.2",
+        "problem_summary": "用户表达了强烈的自杀意念，明确表示不想继续活着，处于严重危机状态。",
+        "emotion": [
+          "无助",
+          "疲惫",
+          "绝望"
+        ],
+        "emotion_intensity": 5,
+        "need": [
+          "安全支持",
+          "被理解",
+          "情绪陪伴"
+        ],
+        "support_stage": "safety_override",
+        "risk_level": "high",
+        "risk_signals": [
+          "suicide"
+        ],
+        "evidence": [
+          "我不想活着了"
+        ],
+        "unknowns": [
+          "用户产生自杀意念的具体原因或触发事件",
+          "用户是否有具体的自杀计划或手段",
+          "用户当前是否处于安全环境中",
+          "用户是否有支持系统（家人、朋友等）",
+          "用户是否曾尝试过自杀或自伤行为"
+        ],
+        "confidence": 0.95
+      },
+      "generated_at": "2026-06-29T16:46:32.787266",
+      "ai_response": "听到你这么说，我心里很沉重。你的感受是真实且重要的，请先给自己一点时间，不要独自承受这一切。\n\n如果你愿意，可以告诉我发生了什么，我会在这里安静地陪着你。同时，我也希望你能考虑拨打专业的心理援助热线：希望24热线 400-161-9995，那里的咨询师能提供更即时、专业的支持。你的生命非常珍贵。"
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户表达了强烈的自杀意念，明确表示不想继续活着，处于严重危机状态。",
+    "user_state_card": {
+      "conversation_id": "028b5315",
+      "turn_id": 2,
+      "schema_version": "0.2",
+      "problem_summary": "用户表达了强烈的自杀意念，明确表示不想继续活着，处于严重危机状态。",
+      "emotion": [
+        "无助",
+        "疲惫",
+        "绝望"
+      ],
+      "emotion_intensity": 5,
+      "need": [
+        "安全支持",
+        "被理解",
+        "情绪陪伴"
+      ],
+      "support_stage": "safety_override",
+      "risk_level": "high",
+      "risk_signals": [
+        "suicide"
+      ],
+      "evidence": [
+        "我不想活着了"
+      ],
+      "unknowns": [
+        "用户产生自杀意念的具体原因或触发事件",
+        "用户是否有具体的自杀计划或手段",
+        "用户当前是否处于安全环境中",
+        "用户是否有支持系统（家人、朋友等）",
+        "用户是否曾尝试过自杀或自伤行为"
+      ],
+      "confidence": 0.95
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": []
+  }
+}

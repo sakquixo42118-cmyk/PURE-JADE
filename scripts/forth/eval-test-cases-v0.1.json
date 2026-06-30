@@ -1,0 +1,241 @@
+{
+  "schema_version": "0.2",
+  "purpose": "empathy_agent_8d_evaluation_input",
+  "language": "zh-CN",
+  "notes": [
+    "Evaluation test cases assembled from test-cases-v0.1.json golden cards.",
+    "Each case contains the full pipeline output (user_state_card + strategy_decision_card + behavior_response_card).",
+    "These are golden/expected outputs — the evaluator should assign high scores to these cases.",
+    "In research study 3, replace the cards with actual PURE-JADE pipeline outputs to evaluate system performance."
+  ],
+  "cases": [
+    {
+      "conversation_id": "case_learning_frustration_001",
+      "turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+        }
+      ],
+      "user_state_card": {
+        "conversation_id": "case_learning_frustration_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户觉得持续复习没有带来成绩提升",
+        "emotion": ["疲惫", "沮丧", "自我怀疑"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "被肯定"],
+        "support_stage": "comforting",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["明明每天都在复习", "成绩还是没有起色", "怎么努力都没有用"],
+        "unknowns": ["具体科目和最近一次成绩变化尚不清楚", "用户是否已经尝试调整学习方法尚不清楚"],
+        "confidence": 0.88
+      },
+      "strategy_decision_card": {
+        "conversation_id": "case_learning_frustration_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "comfort",
+        "primary_strategy": "Reflection of feelings",
+        "secondary_strategy": "Affirmation and Reassurance",
+        "response_timing": "respond_now",
+        "response_intensity": "gentle",
+        "response_goal": "先承接用户努力后看不到结果的无力感，并肯定其持续投入的价值",
+        "reason": "用户表达了疲惫、沮丧和自我怀疑，目前没有主动请求具体学习方案，适合先共情和肯定。",
+        "esconv_example_ids": ["esconv_1181_t009", "esconv_0570_t014", "esconv_1181_t011"],
+        "constraints": [
+          "先共情，不急于给学习建议",
+          "肯定用户已经持续投入的努力",
+          "最多提出一个开放问题",
+          "不得进行心理诊断"
+        ],
+        "prohibited_actions": [
+          "不要说教",
+          "不要用别人更辛苦来压低用户感受",
+          "不要承诺成绩一定会提升"
+        ],
+        "safety_override": false
+      },
+      "behavior_response_card": {
+        "conversation_id": "case_learning_frustration_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "text_response": "听起来你已经绷着坚持了很久，却一直没有看到期待的结果，这种无力感真的会很磨人。能每天复习到现在，说明你其实很在乎这件事，也付出了不少。最近是哪一次成绩或反馈让你特别觉得「努力没用」？",
+        "tone_style": "warm_and_calm",
+        "strategy_realization": [
+          {
+            "strategy": "Reflection of feelings",
+            "text_span": "这种无力感真的会很磨人"
+          },
+          {
+            "strategy": "Affirmation and Reassurance",
+            "text_span": "你其实很在乎这件事，也付出了不少"
+          },
+          {
+            "strategy": "Question",
+            "text_span": "最近是哪一次成绩或反馈让你特别觉得「努力没用」？"
+          }
+        ],
+        "follow_up_question_count": 1,
+        "facial_expression": null,
+        "action": null,
+        "safety_message_used": false
+      }
+    },
+    {
+      "conversation_id": "case_parent_child_conflict_001",
+      "turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "我跟我妈一说话就吵，她总觉得我不够努力。我也不知道怎么跟她解释，越说越烦。"
+        }
+      ],
+      "user_state_card": {
+        "conversation_id": "case_parent_child_conflict_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户与母亲沟通时频繁争吵并感到被误解",
+        "emotion": ["愤怒", "困惑", "压力"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "信息澄清", "表达空间"],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["一说话就吵", "她总觉得我不够努力", "不知道怎么跟她解释", "越说越烦"],
+        "unknowns": ["争吵通常围绕哪些具体事情尚不清楚", "用户最希望母亲理解哪一点尚不清楚"],
+        "confidence": 0.86
+      },
+      "strategy_decision_card": {
+        "conversation_id": "case_parent_child_conflict_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "clarify",
+        "primary_strategy": "Restatement or Paraphrasing",
+        "secondary_strategy": "Question",
+        "response_timing": "ask_clarification",
+        "response_intensity": "gentle",
+        "response_goal": "先整理用户被误解和沟通受阻的体验，再澄清其最想表达的核心内容",
+        "reason": "用户的主要困难是沟通冲突和解释受阻，信息仍不足，适合先复述处境并提出一个聚焦问题。",
+        "esconv_example_ids": ["esconv_1230_t006", "esconv_0842_t020", "esconv_0176_t012"],
+        "constraints": [
+          "先复述亲子沟通中的被误解感",
+          "只问一个关键问题",
+          "不替用户或母亲站队",
+          "不得评价家长人格"
+        ],
+        "prohibited_actions": [
+          "不要直接建议用户和母亲摊牌",
+          "不要说用户或母亲一定有错",
+          "不要给复杂沟通话术清单"
+        ],
+        "safety_override": false
+      },
+      "behavior_response_card": {
+        "conversation_id": "case_parent_child_conflict_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "text_response": "听起来你不是不想沟通，而是每次刚想解释，就会被「不够努力」这个评价堵住，最后变成争吵和烦躁。那种怎么说都说不清的感觉确实很累。现在你最想让妈妈先理解的是哪一件事？",
+        "tone_style": "exploratory",
+        "strategy_realization": [
+          {
+            "strategy": "Restatement or Paraphrasing",
+            "text_span": "不是不想沟通，而是每次刚想解释"
+          },
+          {
+            "strategy": "Reflection of feelings",
+            "text_span": "怎么说都说不清的感觉确实很累"
+          },
+          {
+            "strategy": "Question",
+            "text_span": "你最想让妈妈先理解的是哪一件事？"
+          }
+        ],
+        "follow_up_question_count": 1,
+        "facial_expression": null,
+        "action": null,
+        "safety_message_used": false
+      }
+    },
+    {
+      "conversation_id": "case_lonely_companionship_001",
+      "turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue": [
+        {
+          "speaker": "user",
+          "content": "室友周末都有安排，我一个人待在宿舍，感觉大家都有自己的生活，只有我特别多余。"
+        }
+      ],
+      "user_state_card": {
+        "conversation_id": "case_lonely_companionship_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "problem_summary": "用户周末独处时感到孤独和多余",
+        "emotion": ["孤独", "沮丧", "自我怀疑"],
+        "emotion_intensity": 2,
+        "need": ["被理解", "情绪陪伴", "被肯定"],
+        "support_stage": "comforting",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": ["一个人待在宿舍", "大家都有自己的生活", "只有我特别多余"],
+        "unknowns": ["用户是否有可联系的朋友或家人尚不清楚", "这种孤独感持续多久尚不清楚"],
+        "confidence": 0.9
+      },
+      "strategy_decision_card": {
+        "conversation_id": "case_lonely_companionship_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "support_intention": "comfort",
+        "primary_strategy": "Reflection of feelings",
+        "secondary_strategy": "Affirmation and Reassurance",
+        "response_timing": "respond_now",
+        "response_intensity": "gentle",
+        "response_goal": "承接用户的孤独和多余感，并降低其把独处等同于没有价值的自我判断",
+        "reason": "用户主要表达孤独和自我怀疑，并未主动请求社交建议，适合先情绪承接和具体 reassurance。",
+        "esconv_example_ids": ["esconv_0176_t012", "esconv_0570_t014", "esconv_1181_t011"],
+        "constraints": [
+          "先回应孤独和多余感",
+          "不要立即要求用户主动社交",
+          "可以轻量正常化独处感",
+          "最多提出一个开放问题"
+        ],
+        "prohibited_actions": [
+          "不要说大家都这样来敷衍",
+          "不要要求用户马上出去认识新朋友",
+          "不要否定用户的孤独感"
+        ],
+        "safety_override": false
+      },
+      "behavior_response_card": {
+        "conversation_id": "case_lonely_companionship_001",
+        "turn_id": 1,
+        "schema_version": "0.1",
+        "text_response": "看到室友都有安排，而自己一个人待着，确实很容易冒出「是不是只有我被落下了」的感觉。你说自己特别多余，听起来那一刻不只是无聊，更像是有点孤单和被隔开的难受，但这不代表你真的很多余。这个周末里，什么时候这种感觉最明显？",
+        "tone_style": "validating",
+        "strategy_realization": [
+          {
+            "strategy": "Reflection of feelings",
+            "text_span": "有点孤单和被隔开的难受"
+          },
+          {
+            "strategy": "Affirmation and Reassurance",
+            "text_span": "这不代表你真的很多余"
+          },
+          {
+            "strategy": "Question",
+            "text_span": "什么时候这种感觉最明显？"
+          }
+        ],
+        "follow_up_question_count": 1,
+        "facial_expression": null,
+        "action": null,
+        "safety_message_used": false
+      }
+    }
+  ]
+}
