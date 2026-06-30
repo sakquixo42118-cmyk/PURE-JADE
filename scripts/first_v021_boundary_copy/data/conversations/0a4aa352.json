@@ -1,0 +1,146 @@
+{
+  "conversation_id": "0a4aa352",
+  "schema_version": "0.2.1",
+  "created_at": "2026-06-30T17:30:49.371914",
+  "updated_at": "2026-06-30T17:30:49.373915",
+  "current_turn_id": 1,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。",
+      "timestamp": "2026-06-30T17:30:49.373915"
+    },
+    {
+      "turn_id": 1,
+      "speaker": "assistant",
+      "content": "听起来你付出了很多努力，却没有得到预期的回报，这种疲惫和沮丧真的让人很难受。你已经很用心地在坚持了，这份认真本身就值得被看见。在这样的时刻，允许自己喘口气，也是一种重要的自我照顾。",
+      "timestamp": "2026-06-30T17:30:49.373915"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "state_update_request": {
+        "conversation_id": "0a4aa352",
+        "turn_id": 1,
+        "schema_version": "0.2.1",
+        "current_user_message": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。",
+        "previous_state_snapshot": null,
+        "recent_dialogue_window": [
+          {
+            "turn_id": 1,
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "0a4aa352",
+        "turn_id": 1,
+        "previous_turn_id": null,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户表示尽管每天复习，但成绩没有起色，感到极度疲惫。",
+        "state_update_type": "initial",
+        "problem_summary": "学业努力未获成效，产生疲惫和压力。",
+        "emotion": [
+          "疲惫"
+        ],
+        "emotion_intensity": 2,
+        "need": [
+          "被理解"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "“我最近真的很累，明明每天都在复习，但成绩还是没有起色。”"
+        ],
+        "unknowns": [
+          "具体学科、考试类型、复习方法、持续时间和成绩变化程度。"
+        ],
+        "carried_over_facts": [],
+        "new_evidence": [
+          "“我最近真的很累，明明每天都在复习，但成绩还是没有起色。”"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "最近是在准备什么类型考试或科目？",
+          "每天复习多长时间？复习方式是什么？",
+          "成绩具体变化情况如何？有具体分数反馈吗？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.9
+      },
+      "generated_at": "2026-06-30T17:30:49.373915",
+      "behavior_response_card": {
+        "text_response": "听起来你付出了很多努力，却没有得到预期的回报，这种疲惫和沮丧真的让人很难受。你已经很用心地在坚持了，这份认真本身就值得被看见。在这样的时刻，允许自己喘口气，也是一种重要的自我照顾。",
+        "schema_version": "0.2"
+      }
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户表示尽管每天复习，但成绩没有起色，感到极度疲惫。",
+    "user_state_card": {
+      "conversation_id": "0a4aa352",
+      "turn_id": 1,
+      "previous_turn_id": null,
+      "schema_version": "0.2",
+      "dialogue_summary": "用户表示尽管每天复习，但成绩没有起色，感到极度疲惫。",
+      "state_update_type": "initial",
+      "problem_summary": "学业努力未获成效，产生疲惫和压力。",
+      "emotion": [
+        "疲惫"
+      ],
+      "emotion_intensity": 2,
+      "need": [
+        "被理解"
+      ],
+      "support_stage": "exploration",
+      "risk_level": "low",
+      "risk_signals": [],
+      "evidence": [
+        "“我最近真的很累，明明每天都在复习，但成绩还是没有起色。”"
+      ],
+      "unknowns": [
+        "具体学科、考试类型、复习方法、持续时间和成绩变化程度。"
+      ],
+      "carried_over_facts": [],
+      "new_evidence": [
+        "“我最近真的很累，明明每天都在复习，但成绩还是没有起色。”"
+      ],
+      "revised_fields": [],
+      "open_questions": [
+        "最近是在准备什么类型考试或科目？",
+        "每天复习多长时间？复习方式是什么？",
+        "成绩具体变化情况如何？有具体分数反馈吗？"
+      ],
+      "risk_memory": {
+        "highest_risk_level": "low",
+        "risk_signals_seen": [],
+        "safety_followup_needed": false
+      },
+      "confidence": 0.9
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": [
+      "最近是在准备什么类型考试或科目？",
+      "每天复习多长时间？复习方式是什么？",
+      "成绩具体变化情况如何？有具体分数反馈吗？"
+    ]
+  }
+}

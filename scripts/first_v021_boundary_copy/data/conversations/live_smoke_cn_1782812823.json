@@ -1,0 +1,371 @@
+{
+  "conversation_id": "live_smoke_cn_1782812823",
+  "schema_version": "0.2.1",
+  "created_at": "2026-06-30T17:47:32.010003",
+  "updated_at": "2026-06-30T17:48:43.747498",
+  "current_turn_id": 2,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+      "timestamp": "2026-06-30T17:47:32.011754"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "user",
+      "content": "主要是高数，我每天都刷题，但考试还是很差。",
+      "timestamp": "2026-06-30T17:48:43.747498"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "state_update_request": {
+        "conversation_id": "live_smoke_cn_1782812823",
+        "turn_id": 1,
+        "schema_version": "0.2.1",
+        "current_user_message": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+        "previous_state_snapshot": null,
+        "recent_dialogue_window": [
+          {
+            "turn_id": 1,
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "live_smoke_cn_1782812823",
+        "turn_id": 1,
+        "previous_turn_id": null,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户表示最近很累，尽管每天复习但成绩无提升，感到努力无用。",
+        "state_update_type": "initial",
+        "problem_summary": "用户对学习效果失望，产生努力无用的无力感。",
+        "emotion": [
+          "无助"
+        ],
+        "emotion_intensity": 2,
+        "need": [
+          "被理解"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+        ],
+        "unknowns": [],
+        "carried_over_facts": [],
+        "new_evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "具体是什么科目或考试？",
+          "当前每天复习的时长和方法是怎样的？",
+          "是否有来自家庭或学校的过高期望或压力？",
+          "睡眠、饮食与休息情况如何？",
+          "以往的学业表现如何？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.9
+      },
+      "generated_at": "2026-06-30T17:47:32.011754"
+    },
+    {
+      "turn_id": 2,
+      "state_update_request": {
+        "conversation_id": "live_smoke_cn_1782812823",
+        "turn_id": 2,
+        "schema_version": "0.2.1",
+        "current_user_message": "主要是高数，我每天都刷题，但考试还是很差。",
+        "previous_state_snapshot": {
+          "turn_id": 1,
+          "dialogue_summary": "用户表示最近很累，尽管每天复习但成绩无提升，感到努力无用。",
+          "user_state_card": {
+            "conversation_id": "live_smoke_cn_1782812823",
+            "turn_id": 1,
+            "previous_turn_id": null,
+            "schema_version": "0.2",
+            "dialogue_summary": "用户表示最近很累，尽管每天复习但成绩无提升，感到努力无用。",
+            "state_update_type": "initial",
+            "problem_summary": "用户对学习效果失望，产生努力无用的无力感。",
+            "emotion": [
+              "无助"
+            ],
+            "emotion_intensity": 2,
+            "need": [
+              "被理解"
+            ],
+            "support_stage": "exploration",
+            "risk_level": "low",
+            "risk_signals": [],
+            "evidence": [
+              "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+            ],
+            "unknowns": [],
+            "carried_over_facts": [],
+            "new_evidence": [
+              "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+            ],
+            "revised_fields": [],
+            "open_questions": [
+              "具体是什么科目或考试？",
+              "当前每天复习的时长和方法是怎样的？",
+              "是否有来自家庭或学校的过高期望或压力？",
+              "睡眠、饮食与休息情况如何？",
+              "以往的学业表现如何？"
+            ],
+            "risk_memory": {
+              "highest_risk_level": "low",
+              "risk_signals_seen": [],
+              "safety_followup_needed": false
+            },
+            "confidence": 0.9
+          },
+          "risk_memory": {
+            "highest_risk_level": "low",
+            "risk_signals_seen": [],
+            "safety_followup_needed": false
+          },
+          "open_questions": [
+            "具体是什么科目或考试？",
+            "当前每天复习的时长和方法是怎样的？",
+            "是否有来自家庭或学校的过高期望或压力？",
+            "睡眠、饮食与休息情况如何？",
+            "以往的学业表现如何？"
+          ]
+        },
+        "recent_dialogue_window": [
+          {
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+            "turn_id": 1
+          },
+          {
+            "turn_id": 2,
+            "speaker": "user",
+            "content": "主要是高数，我每天都刷题，但考试还是很差。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "live_smoke_cn_1782812823",
+        "turn_id": 2,
+        "previous_turn_id": 1,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户表示努力复习但成效甚微，已具体到高数科目，每日刷题但考试成绩仍差，感到努力无用。",
+        "state_update_type": "revised",
+        "problem_summary": "高数学习中每日刷题却考试成绩差，产生努力无回报的挫败感。",
+        "emotion": [
+          "无助",
+          "沮丧"
+        ],
+        "emotion_intensity": 2,
+        "need": [
+          "被理解",
+          "信息澄清"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+          "主要是高数，我每天都刷题，但考试还是很差。"
+        ],
+        "unknowns": [
+          "具体复习时长与方法",
+          "是否有外部压力",
+          "睡眠饮食状况",
+          "以往学业表现"
+        ],
+        "carried_over_facts": [
+          "用户长期面临学习效果不佳，感到努力无回报的无力感",
+          "困难集中在高数科目",
+          "存在情绪低落，对努力产生质疑"
+        ],
+        "new_evidence": [
+          "主要是高数，我每天都刷题，但考试还是很差。"
+        ],
+        "revised_fields": [
+          {
+            "field": "problem_summary",
+            "previous_value": "用户对学习效果失望，产生努力无用的无力感。",
+            "current_value": "高数学习中每日刷题却考试成绩差，产生努力无回报的挫败感。",
+            "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+          },
+          {
+            "field": "emotion",
+            "previous_value": [
+              "无助"
+            ],
+            "current_value": [
+              "无助",
+              "沮丧"
+            ],
+            "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+          },
+          {
+            "field": "need",
+            "previous_value": [
+              "被理解"
+            ],
+            "current_value": [
+              "被理解",
+              "信息澄清"
+            ],
+            "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+          },
+          {
+            "field": "unknowns",
+            "previous_value": [],
+            "current_value": [
+              "具体复习时长与方法",
+              "是否有外部压力",
+              "睡眠饮食状况",
+              "以往学业表现"
+            ],
+            "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+          }
+        ],
+        "open_questions": [
+          "当前每天复习的时长和方法是怎样的？",
+          "是否有来自家庭或学校的过高期望或压力？",
+          "睡眠、饮食与休息情况如何？",
+          "以往的学业表现如何？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.9
+      },
+      "generated_at": "2026-06-30T17:48:43.747498"
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户表示努力复习但成效甚微，已具体到高数科目，每日刷题但考试成绩仍差，感到努力无用。",
+    "user_state_card": {
+      "conversation_id": "live_smoke_cn_1782812823",
+      "turn_id": 2,
+      "previous_turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue_summary": "用户表示努力复习但成效甚微，已具体到高数科目，每日刷题但考试成绩仍差，感到努力无用。",
+      "state_update_type": "revised",
+      "problem_summary": "高数学习中每日刷题却考试成绩差，产生努力无回报的挫败感。",
+      "emotion": [
+        "无助",
+        "沮丧"
+      ],
+      "emotion_intensity": 2,
+      "need": [
+        "被理解",
+        "信息澄清"
+      ],
+      "support_stage": "exploration",
+      "risk_level": "low",
+      "risk_signals": [],
+      "evidence": [
+        "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+        "主要是高数，我每天都刷题，但考试还是很差。"
+      ],
+      "unknowns": [
+        "具体复习时长与方法",
+        "是否有外部压力",
+        "睡眠饮食状况",
+        "以往学业表现"
+      ],
+      "carried_over_facts": [
+        "用户长期面临学习效果不佳，感到努力无回报的无力感",
+        "困难集中在高数科目",
+        "存在情绪低落，对努力产生质疑"
+      ],
+      "new_evidence": [
+        "主要是高数，我每天都刷题，但考试还是很差。"
+      ],
+      "revised_fields": [
+        {
+          "field": "problem_summary",
+          "previous_value": "用户对学习效果失望，产生努力无用的无力感。",
+          "current_value": "高数学习中每日刷题却考试成绩差，产生努力无回报的挫败感。",
+          "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+        },
+        {
+          "field": "emotion",
+          "previous_value": [
+            "无助"
+          ],
+          "current_value": [
+            "无助",
+            "沮丧"
+          ],
+          "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+        },
+        {
+          "field": "need",
+          "previous_value": [
+            "被理解"
+          ],
+          "current_value": [
+            "被理解",
+            "信息澄清"
+          ],
+          "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+        },
+        {
+          "field": "unknowns",
+          "previous_value": [],
+          "current_value": [
+            "具体复习时长与方法",
+            "是否有外部压力",
+            "睡眠饮食状况",
+            "以往学业表现"
+          ],
+          "reason": "current_turn_evidence: 主要是高数，我每天都刷题，但考试还是很差。"
+        }
+      ],
+      "open_questions": [
+        "当前每天复习的时长和方法是怎样的？",
+        "是否有来自家庭或学校的过高期望或压力？",
+        "睡眠、饮食与休息情况如何？",
+        "以往的学业表现如何？"
+      ],
+      "risk_memory": {
+        "highest_risk_level": "low",
+        "risk_signals_seen": [],
+        "safety_followup_needed": false
+      },
+      "confidence": 0.9
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": [
+      "当前每天复习的时长和方法是怎样的？",
+      "是否有来自家庭或学校的过高期望或压力？",
+      "睡眠、饮食与休息情况如何？",
+      "以往的学业表现如何？"
+    ]
+  }
+}

@@ -11,6 +11,7 @@ PURE-JADE 前端 EXE 构建脚本
 import os
 import sys
 import shutil
+import subprocess
 from pathlib import Path
 
 # 确保 PyInstaller 可用
@@ -43,20 +44,21 @@ if not BACKEND_PATH.exists():
 # 用户需要确保系统安装了 Python 及所需依赖。
 
 cmd = [
-    "pyinstaller",
+    sys.executable,
+    "-m",
+    "PyInstaller",
     "--onefile",
     "--windowed",  # 无控制台窗口
     "--name", "PURE-JADE",
     "--distpath", str(DIST_DIR),
     "--workpath", str(WORK_DIR),
-    "--add-data", f"{BACKEND_PATH};." if sys.platform == "win32" else f"{BACKEND_PATH}:.",
+    f"--add-data={BACKEND_PATH}:.",
     # ── hidden imports + collect-all（customtkinter 含 DLL / 子包） ──
     "--collect-all", "customtkinter",
     "--hidden-import", "customtkinter",
     "--hidden-import", "httpx",
     "--hidden-import", "h2",
     "--hidden-import", "sniffio",
-    "--hidden-import", "tkinterdnd2",
     "--hidden-import", "PIL",
     # ── 图标（如果有） ──
     # "--icon", "icon.ico",
@@ -71,7 +73,7 @@ print(f"输出目录: {DIST_DIR}")
 print()
 
 os.chdir(str(ROOT))
-result = os.system(" ".join(cmd))
+result = subprocess.run(cmd, check=False).returncode
 
 if result == 0:
     print()

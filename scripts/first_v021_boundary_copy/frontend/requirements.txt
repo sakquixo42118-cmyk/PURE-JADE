@@ -1,5 +1,5 @@
-# PURE-JADE 前端依赖
+# PURE-JADE frontend dependencies
 customtkinter>=5.2.0
 httpx>=0.27.0
-# PyInstaller（构建 EXE 时需要）
+# Build dependency for EXE packaging:
 # pip install pyinstaller

@@ -70,6 +70,10 @@ REQUIRED_STRATEGY_FIELDS = {
     "prohibited_actions",
     "safety_override",
 }
+REQUIRED_STRATEGY_V02_FIELDS = REQUIRED_STRATEGY_FIELDS | {
+    "state_basis_turn_id",
+    "state_change_summary",
+}
 
 REQUIRED_BEHAVIOR_V01 = {
     "conversation_id",
@@ -187,7 +191,14 @@ def recent_dialogue_window(record: dict[str, Any], turn_id: int, max_turns: int)
             "content": item.get("content"),
         }
         for item in dialogue_log
-        if isinstance(item.get("turn_id"), int) and min_turn <= item.get("turn_id") <= turn_id
+        if (
+            isinstance(item.get("turn_id"), int)
+            and min_turn <= item.get("turn_id") <= turn_id
+            and (
+                item.get("turn_id") < turn_id
+                or item.get("speaker") == "user"
+            )
+        )
     ]
     return [item for item in window if item.get("speaker") and item.get("content")]
 
@@ -369,16 +380,38 @@ def validate_string_list(check: BehaviorCheck, field_name: str, values: Any, min
 
 
 def validate_strategy_card(check: BehaviorCheck, strategy_card: dict[str, Any]) -> None:
-    missing = sorted(REQUIRED_STRATEGY_FIELDS - set(strategy_card))
+    version = strategy_card.get("schema_version")
+    if version not in {"0.1", "0.2"}:
+        check.error(f"strategy_decision_card.schema_version must be '0.1' or '0.2': {version!r}")
+
+    required = REQUIRED_STRATEGY_V02_FIELDS if version == "0.2" else REQUIRED_STRATEGY_FIELDS
+    missing = sorted(required - set(strategy_card))
     if missing:
         check.error(f"strategy_decision_card missing required keys: {missing}")
         return
+
+    if version == "0.2":
+        if not isinstance(strategy_card.get("state_basis_turn_id"), int):
+            check.error("strategy_decision_card.state_basis_turn_id must be an integer")
+        state_change_summary = strategy_card.get("state_change_summary")
+        if not isinstance(state_change_summary, str) or not state_change_summary.strip():
+            check.error("strategy_decision_card.state_change_summary must be a non-empty string")
+
     for field_name in ("primary_strategy", "secondary_strategy"):
         value = strategy_card.get(field_name)
         if value is not None and value not in ALLOWED_ESCONV_STRATEGIES:
             check.error(f"invalid strategy_decision_card.{field_name}: {value!r}")
-    if not isinstance(strategy_card.get("safety_override"), bool):
+
+    safety_override = strategy_card.get("safety_override")
+    if not isinstance(safety_override, bool):
         check.error("strategy_decision_card.safety_override must be boolean")
+    elif safety_override:
+        if strategy_card.get("support_intention") != "safety_support":
+            check.error("safety_override strategy must use support_intention='safety_support'")
+        if strategy_card.get("primary_strategy") is not None or strategy_card.get("secondary_strategy") is not None:
+            check.error("safety_override strategy must set primary_strategy and secondary_strategy to null")
+    elif strategy_card.get("primary_strategy") is None:
+        check.error("non-safety strategy must include a primary_strategy")
 
 
 def validate_behavior_card(
@@ -468,8 +501,12 @@ def validate_behavior_card(
     if safety_override:
         if not card.get("safety_message_used"):
             check.error("safety_override behavior must set safety_message_used=true")
+        if card.get("tone_style") != "safety_directive":
+            check.error("safety_override behavior must use tone_style='safety_directive'")
         if "Safety Guidance" not in realized:
             check.error("safety_override behavior must realize Safety Guidance")
+        if card.get("follow_up_question_count") != 0:
+            check.error("safety_override behavior must not ask follow-up questions")
     else:
         for required_strategy in (strategy_card.get("primary_strategy"), strategy_card.get("secondary_strategy")):
             if required_strategy is not None and required_strategy not in realized:

@@ -1,0 +1,272 @@
+{
+  "conversation_id": "live_smoke_1782812722",
+  "schema_version": "0.2.1",
+  "created_at": "2026-06-30T17:45:38.975650",
+  "updated_at": "2026-06-30T17:45:56.038889",
+  "current_turn_id": 2,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "???????????????????????????????????????",
+      "timestamp": "2026-06-30T17:45:38.979604"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "user",
+      "content": "?????????????????????",
+      "timestamp": "2026-06-30T17:45:56.038889"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "state_update_request": {
+        "conversation_id": "live_smoke_1782812722",
+        "turn_id": 1,
+        "schema_version": "0.2.1",
+        "current_user_message": "???????????????????????????????????????",
+        "previous_state_snapshot": null,
+        "recent_dialogue_window": [
+          {
+            "turn_id": 1,
+            "speaker": "user",
+            "content": "???????????????????????????????????????"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "live_smoke_1782812722",
+        "turn_id": 1,
+        "previous_turn_id": null,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户发送了一串问号，意图和情绪状态不明。",
+        "state_update_type": "initial",
+        "problem_summary": "当前核心困境未明确，用户仅以问号表达不确定或困惑。",
+        "emotion": [
+          "困惑"
+        ],
+        "emotion_intensity": 1,
+        "need": [
+          "信息澄清"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "用户消息：\"???????????????????????????????????????\""
+        ],
+        "unknowns": [
+          "用户的具体问题、情绪背景和求助意图完全未知。"
+        ],
+        "carried_over_facts": [],
+        "new_evidence": [
+          "当前轮用户输入为一长串问号，无其他内容。"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "用户具体需要什么帮助？",
+          "用户当前情绪状态如何？",
+          "问号是否表达困惑、催促或其他含义？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.3
+      },
+      "generated_at": "2026-06-30T17:45:38.979604"
+    },
+    {
+      "turn_id": 2,
+      "state_update_request": {
+        "conversation_id": "live_smoke_1782812722",
+        "turn_id": 2,
+        "schema_version": "0.2.1",
+        "current_user_message": "?????????????????????",
+        "previous_state_snapshot": {
+          "turn_id": 1,
+          "dialogue_summary": "用户发送了一串问号，意图和情绪状态不明。",
+          "user_state_card": {
+            "conversation_id": "live_smoke_1782812722",
+            "turn_id": 1,
+            "previous_turn_id": null,
+            "schema_version": "0.2",
+            "dialogue_summary": "用户发送了一串问号，意图和情绪状态不明。",
+            "state_update_type": "initial",
+            "problem_summary": "当前核心困境未明确，用户仅以问号表达不确定或困惑。",
+            "emotion": [
+              "困惑"
+            ],
+            "emotion_intensity": 1,
+            "need": [
+              "信息澄清"
+            ],
+            "support_stage": "exploration",
+            "risk_level": "low",
+            "risk_signals": [],
+            "evidence": [
+              "用户消息：\"???????????????????????????????????????\""
+            ],
+            "unknowns": [
+              "用户的具体问题、情绪背景和求助意图完全未知。"
+            ],
+            "carried_over_facts": [],
+            "new_evidence": [
+              "当前轮用户输入为一长串问号，无其他内容。"
+            ],
+            "revised_fields": [],
+            "open_questions": [
+              "用户具体需要什么帮助？",
+              "用户当前情绪状态如何？",
+              "问号是否表达困惑、催促或其他含义？"
+            ],
+            "risk_memory": {
+              "highest_risk_level": "low",
+              "risk_signals_seen": [],
+              "safety_followup_needed": false
+            },
+            "confidence": 0.3
+          },
+          "risk_memory": {
+            "highest_risk_level": "low",
+            "risk_signals_seen": [],
+            "safety_followup_needed": false
+          },
+          "open_questions": [
+            "用户具体需要什么帮助？",
+            "用户当前情绪状态如何？",
+            "问号是否表达困惑、催促或其他含义？"
+          ]
+        },
+        "recent_dialogue_window": [
+          {
+            "speaker": "user",
+            "content": "???????????????????????????????????????",
+            "turn_id": 1
+          },
+          {
+            "turn_id": 2,
+            "speaker": "user",
+            "content": "?????????????????????"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "live_smoke_1782812722",
+        "turn_id": 2,
+        "previous_turn_id": 1,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户连续发送两串问号，未提供任何文字信息，意图和情绪状态依然不明。",
+        "state_update_type": "carry_over",
+        "problem_summary": "当前核心困境未明确，用户仅以问号表达不确定或困惑。",
+        "emotion": [
+          "困惑"
+        ],
+        "emotion_intensity": 1,
+        "need": [
+          "信息澄清"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "用户消息（turn 1）：\"???????????????????????????????????????\"",
+          "用户消息（turn 2）：\"?????????????????????\""
+        ],
+        "unknowns": [
+          "用户的具体问题、情绪背景和求助意图完全未知。"
+        ],
+        "carried_over_facts": [
+          "用户从首轮开始仅发送问号，无任何文字表述。"
+        ],
+        "new_evidence": [
+          "当前轮用户输入仍为一串问号，无其他内容。"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "用户具体需要什么帮助？",
+          "用户当前情绪状态如何？",
+          "问号是否表达困惑、催促或其他含义？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.3
+      },
+      "generated_at": "2026-06-30T17:45:56.038889"
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户连续发送两串问号，未提供任何文字信息，意图和情绪状态依然不明。",
+    "user_state_card": {
+      "conversation_id": "live_smoke_1782812722",
+      "turn_id": 2,
+      "previous_turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue_summary": "用户连续发送两串问号，未提供任何文字信息，意图和情绪状态依然不明。",
+      "state_update_type": "carry_over",
+      "problem_summary": "当前核心困境未明确，用户仅以问号表达不确定或困惑。",
+      "emotion": [
+        "困惑"
+      ],
+      "emotion_intensity": 1,
+      "need": [
+        "信息澄清"
+      ],
+      "support_stage": "exploration",
+      "risk_level": "low",
+      "risk_signals": [],
+      "evidence": [
+        "用户消息（turn 1）：\"???????????????????????????????????????\"",
+        "用户消息（turn 2）：\"?????????????????????\""
+      ],
+      "unknowns": [
+        "用户的具体问题、情绪背景和求助意图完全未知。"
+      ],
+      "carried_over_facts": [
+        "用户从首轮开始仅发送问号，无任何文字表述。"
+      ],
+      "new_evidence": [
+        "当前轮用户输入仍为一串问号，无其他内容。"
+      ],
+      "revised_fields": [],
+      "open_questions": [
+        "用户具体需要什么帮助？",
+        "用户当前情绪状态如何？",
+        "问号是否表达困惑、催促或其他含义？"
+      ],
+      "risk_memory": {
+        "highest_risk_level": "low",
+        "risk_signals_seen": [],
+        "safety_followup_needed": false
+      },
+      "confidence": 0.3
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": [
+      "用户具体需要什么帮助？",
+      "用户当前情绪状态如何？",
+      "问号是否表达困惑、催促或其他含义？"
+    ]
+  }
+}

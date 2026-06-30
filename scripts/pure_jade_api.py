@@ -101,15 +101,32 @@ def load_api_config(args: Any, default_api_url: str = DEFAULT_API_URL) -> tuple[
     api_timeout = getattr(args, "api_timeout", None)
     api_max_retries = getattr(args, "api_max_retries", None)
 
-    url = normalize_chat_completions_url(api_url or os.environ.get("PURE_JADE_API_URL") or default_api_url)
-    api_key = os.environ.get("PURE_JADE_API_KEY", "")
-    model = api_model or os.environ.get("PURE_JADE_API_MODEL", "")
-    temperature = api_temperature if api_temperature is not None else read_float_env("PURE_JADE_API_TEMPERATURE", 0.2)
-    timeout_seconds = api_timeout if api_timeout is not None else read_int_env("PURE_JADE_API_TIMEOUT_SECONDS", 60)
-    max_retries = (
-        api_max_retries if api_max_retries is not None else read_int_env("PURE_JADE_API_MAX_RETRIES", 1)
-    )
-    json_mode = read_bool_env("PURE_JADE_API_JSON_MODE", True)
+    url_value = api_url or os.environ.get("PURE_JADE_API_URL") or os.environ.get("LLM_BASE_URL") or default_api_url
+    url = normalize_chat_completions_url(url_value)
+    api_key = os.environ.get("PURE_JADE_API_KEY") or os.environ.get("LLM_API_KEY", "")
+    model = api_model or os.environ.get("PURE_JADE_API_MODEL") or os.environ.get("LLM_MODEL", "")
+    if api_temperature is not None:
+        temperature = api_temperature
+    elif os.environ.get("PURE_JADE_API_TEMPERATURE") is not None:
+        temperature = read_float_env("PURE_JADE_API_TEMPERATURE", 0.2)
+    else:
+        temperature = read_float_env("LLM_TEMPERATURE", 0.2)
+    if api_timeout is not None:
+        timeout_seconds = api_timeout
+    elif os.environ.get("PURE_JADE_API_TIMEOUT_SECONDS") is not None:
+        timeout_seconds = read_int_env("PURE_JADE_API_TIMEOUT_SECONDS", 60)
+    else:
+        timeout_seconds = read_int_env("LLM_TIMEOUT_SECONDS", 60)
+    if api_max_retries is not None:
+        max_retries = api_max_retries
+    elif os.environ.get("PURE_JADE_API_MAX_RETRIES") is not None:
+        max_retries = read_int_env("PURE_JADE_API_MAX_RETRIES", 1)
+    else:
+        max_retries = read_int_env("LLM_MAX_RETRIES", 1)
+    if os.environ.get("PURE_JADE_API_JSON_MODE") is not None:
+        json_mode = read_bool_env("PURE_JADE_API_JSON_MODE", True)
+    else:
+        json_mode = read_bool_env("LLM_USE_JSON_MODE", True)
 
     if not api_key:
         errors.append("missing PURE_JADE_API_KEY")

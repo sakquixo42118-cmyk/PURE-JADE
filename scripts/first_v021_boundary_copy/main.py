@@ -87,6 +87,16 @@ ALLOWED_SUPPORT_STAGES = ["exploration", "comforting", "action", "safety_overrid
 ALLOWED_RISK_LEVELS = ["low", "medium", "high"]
 ALLOWED_RISK_SIGNALS = ["self_harm", "suicide", "violence", "abuse", "crisis"]
 RISK_RANK = {"low": 0, "medium": 1, "high": 2}
+REVISION_TRACKED_FIELDS = (
+    "problem_summary",
+    "emotion",
+    "emotion_intensity",
+    "need",
+    "support_stage",
+    "risk_level",
+    "risk_signals",
+    "unknowns",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -389,18 +399,112 @@ def _build_risk_memory(state_card: dict, previous_snapshot: Optional[PreviousSta
     }
 
 
-def _infer_state_update_type(state_card: dict, previous_snapshot: Optional[PreviousStateSnapshot]) -> str:
+def _state_value_for_compare(value):
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return sorted(value)
+    return value
+
+
+def _same_state_value(left, right) -> bool:
+    left = _state_value_for_compare(left)
+    right = _state_value_for_compare(right)
+    try:
+        return json.dumps(left, ensure_ascii=False, sort_keys=True) == json.dumps(right, ensure_ascii=False, sort_keys=True)
+    except TypeError:
+        return left == right
+
+
+def _revision_reason(state_card: dict) -> str:
+    evidence = [item for item in _as_list(state_card.get("new_evidence")) if isinstance(item, str) and item.strip()]
+    if evidence:
+        return "current_turn_evidence: " + " | ".join(evidence[:2])
+    return "current_turn_evidence supports this field update"
+
+
+def _revision_record(field: str, previous_value, current_value, state_card: dict) -> dict:
+    return {
+        "field": field,
+        "previous_value": previous_value,
+        "current_value": current_value,
+        "reason": _revision_reason(state_card),
+    }
+
+
+def _clean_revised_fields(
+    raw_fields,
+    state_card: dict,
+    previous_snapshot: Optional[PreviousStateSnapshot],
+) -> list[dict]:
+    previous_card = previous_snapshot.user_state_card if previous_snapshot else {}
+    cleaned: list[dict] = []
+    seen_fields: set[str] = set()
+    for item in _as_list(raw_fields):
+        if not isinstance(item, dict):
+            continue
+        field = item.get("field")
+        if not isinstance(field, str) or not field.strip() or field in seen_fields:
+            continue
+        seen_fields.add(field)
+        cleaned.append(
+            {
+                "field": field,
+                "previous_value": item.get("previous_value", previous_card.get(field)),
+                "current_value": item.get("current_value", state_card.get(field)),
+                "reason": item.get("reason") if isinstance(item.get("reason"), str) else _revision_reason(state_card),
+            }
+        )
+    return cleaned
+
+
+def _infer_revised_fields(state_card: dict, previous_snapshot: Optional[PreviousStateSnapshot]) -> list[dict]:
     if previous_snapshot is None:
-        return "initial"
+        return []
+    previous_card = previous_snapshot.user_state_card
+    inferred: list[dict] = []
+    for field in REVISION_TRACKED_FIELDS:
+        if field not in previous_card or field not in state_card:
+            continue
+        previous_value = previous_card.get(field)
+        current_value = state_card.get(field)
+        if not _same_state_value(previous_value, current_value):
+            inferred.append(_revision_record(field, previous_value, current_value, state_card))
+    return inferred
+
+
+def _risk_update_type(state_card: dict, previous_snapshot: Optional[PreviousStateSnapshot]) -> Optional[str]:
+    if previous_snapshot is None:
+        return None
     previous_risk = previous_snapshot.user_state_card.get("risk_level", "low")
     current_risk = state_card.get("risk_level", "low")
     if RISK_RANK.get(current_risk, 0) > RISK_RANK.get(previous_risk, 0):
         return "risk_escalation"
     if RISK_RANK.get(current_risk, 0) < RISK_RANK.get(previous_risk, 0):
         return "risk_deescalation"
-    if state_card.get("revised_fields"):
-        return "revised"
-    return "carry_over"
+    return None
+
+
+def _normalize_revision_state(state_card: dict, previous_snapshot: Optional[PreviousStateSnapshot]) -> None:
+    if previous_snapshot is None:
+        state_card["revised_fields"] = []
+        state_card["state_update_type"] = "initial"
+        return
+
+    cleaned = _clean_revised_fields(state_card.get("revised_fields"), state_card, previous_snapshot)
+    seen_fields = {item["field"] for item in cleaned}
+    for item in _infer_revised_fields(state_card, previous_snapshot):
+        if item["field"] not in seen_fields:
+            cleaned.append(item)
+            seen_fields.add(item["field"])
+    state_card["revised_fields"] = cleaned
+
+    risk_update = _risk_update_type(state_card, previous_snapshot)
+    if risk_update:
+        state_card["state_update_type"] = risk_update
+    elif cleaned:
+        state_card["state_update_type"] = "revised"
+    else:
+        state_card["state_update_type"] = "carry_over"
+
 
 
 def _fallback_dialogue_summary(state_card: dict, previous_snapshot: Optional[PreviousStateSnapshot], current_user_message: str) -> str:
@@ -441,7 +545,7 @@ def _normalize_state_card(
     state_card["unknowns"] = [item for item in _as_list(state_card.get("unknowns")) if isinstance(item, str)]
     state_card["new_evidence"] = [item for item in _as_list(state_card.get("new_evidence")) if isinstance(item, str)] or state_card["evidence"][:3]
     state_card["open_questions"] = [item for item in _as_list(state_card.get("open_questions")) if isinstance(item, str)] or state_card["unknowns"]
-    state_card["revised_fields"] = [item for item in _as_list(state_card.get("revised_fields")) if isinstance(item, dict)]
+    state_card.setdefault("problem_summary", current_user_message[:120])
 
     if previous_snapshot is None:
         state_card["carried_over_facts"] = []
@@ -454,9 +558,6 @@ def _normalize_state_card(
 
     summary = _fallback_dialogue_summary(state_card, previous_snapshot, current_user_message)
     state_card["dialogue_summary"] = summary[:max_summary_chars]
-    state_card.setdefault("problem_summary", current_user_message[:120])
-    state_card["state_update_type"] = state_card.get("state_update_type") or _infer_state_update_type(state_card, previous_snapshot)
-
     try:
         intensity = int(state_card.get("emotion_intensity", 1))
     except (TypeError, ValueError):
@@ -468,6 +569,7 @@ def _normalize_state_card(
             state_card["need"].append("安全支持")
     state_card["emotion_intensity"] = min(max(intensity, 0), 3)
 
+    _normalize_revision_state(state_card, previous_snapshot)
     state_card["risk_memory"] = _build_risk_memory(state_card, previous_snapshot)
     state_card.setdefault("confidence", 0.75)
     return state_card

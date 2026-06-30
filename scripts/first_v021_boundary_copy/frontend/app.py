@@ -17,9 +17,11 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import shutil
 import sys
 import threading
 import time
+import traceback
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -32,9 +34,45 @@ import customtkinter as ctk
 # 全局常量
 # ═══════════════════════════════════════════════════════════════════════
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+def _resolve_project_root() -> Path:
+    if getattr(sys, "frozen", False):
+        source_root = Path(sys.executable).resolve().parent.parent.parent
+        if (source_root / "main.py").exists():
+            return source_root
+        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    return Path(__file__).resolve().parent.parent
+
+
+def _resolve_python_executable() -> str:
+    if not getattr(sys, "frozen", False):
+        return sys.executable
+    candidates = [
+        os.getenv("PURE_JADE_PYTHON"),
+        r"D:\python\python.exe",
+        shutil.which("python"),
+        shutil.which("python.exe"),
+        shutil.which("py"),
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).exists():
+            return candidate
+    return "python"
+
+
+PROJECT_ROOT = _resolve_project_root()
 BACKEND_SCRIPT = PROJECT_ROOT / "main.py"
+PYTHON_EXECUTABLE = _resolve_python_executable()
 BACKEND_URL = "http://127.0.0.1:8000"
+LOG_FILE = (Path(sys.executable).resolve().with_suffix(".log") if getattr(sys, "frozen", False) else PROJECT_ROOT / "frontend_app.log")
+
+
+def _log(message: str) -> None:
+    try:
+        LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with LOG_FILE.open("a", encoding="utf-8") as file:
+            file.write(f"{datetime.now().isoformat()} {message}\n")
+    except Exception:
+        pass
 
 # ═══════════════════════════════════════════════════════════════════════
 # CustomTkinter 主题
@@ -73,16 +111,21 @@ class BackendManager:
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
+            _log(f"starting backend python={PYTHON_EXECUTABLE} script={BACKEND_SCRIPT} cwd={PROJECT_ROOT} script_exists={BACKEND_SCRIPT.exists()}")
             self._process = subprocess.Popen(
-                [sys.executable, str(BACKEND_SCRIPT)],
+                [PYTHON_EXECUTABLE, str(BACKEND_SCRIPT)],
                 cwd=str(PROJECT_ROOT),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 startupinfo=startupinfo,
             )
+            _log(f"backend process started pid={self._process.pid}")
         except FileNotFoundError:
+            _log(f"backend script not found: {BACKEND_SCRIPT}")
             print("[Backend] 找不到 main.py，请确认项目结构正确。")
-
+        except Exception as error:
+            _log("backend start failed: " + repr(error))
+            _log(traceback.format_exc())
     def stop(self) -> None:
         """停止后端服务"""
         if self._process is None:
@@ -110,7 +153,7 @@ class BackendManager:
     def is_running(self) -> bool:
         """后端是否响应"""
         try:
-            r = httpx.get(f"{BACKEND_URL}/health", timeout=2)
+            r = httpx.get(f"{BACKEND_URL}/health", timeout=2, trust_env=False)
             return r.status_code == 200
         except (httpx.RequestError, httpx.HTTPStatusError):
             return False
@@ -134,7 +177,7 @@ class APIClient:
     """与后端 API 通信（线程安全）"""
 
     def __init__(self):
-        self._client = httpx.Client(timeout=60.0)
+        self._client = httpx.Client(timeout=60.0, trust_env=False)
 
     def get_config(self) -> dict:
         r = self._client.get(f"{BACKEND_URL}/config", timeout=5)
@@ -649,7 +692,7 @@ class ChatApp(ctk.CTk):
         problem = card.get("problem_summary", "")
 
         summary_lines = [
-            f"情绪：{'、'.join(emotion_list) if emotion_list else '—'}　强度：{intensity}/5",
+            f"情绪：{'、'.join(emotion_list) if emotion_list else '—'}　强度：{intensity}/3",
             f"风险：{risk}　  阶段：{stage}",
             f"需求：{'、'.join(need_list) if need_list else '—'}",
         ]
