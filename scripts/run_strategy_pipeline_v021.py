@@ -8,7 +8,8 @@ This script is still only research content 2:
 The difference from run_strategy_pipeline.py is the input format. This script
 reads a v0.2.1 conversation_record, extracts the target turn's latest
 user_state_card, builds a strategy_decision_request, and then produces a v0.2
-strategy_decision_card.
+strategy_decision_card. It does not pass the full conversation_record to the
+strategy model.
 """
 
 from __future__ import annotations
@@ -37,6 +38,15 @@ REQUIRED_STRATEGY_FIELDS_V021 = base.REQUIRED_STRATEGY_FIELDS | {
     "state_basis_turn_id",
     "state_change_summary",
 }
+
+REQUIRED_LATEST_STATE_FIELDS = {
+    "turn_id",
+    "dialogue_summary",
+    "support_stage",
+    "risk_level",
+    "risk_memory",
+}
+CONVERSATION_RECORD_LEVEL_FIELDS = {"dialogue_log", "turn_records", "current_state"}
 
 
 class RunCheck:
@@ -178,6 +188,17 @@ def build_strategy_decision_request(
         "latest_user_state_card": user_state_card,
         "strategy_references": strategy_references,
     }
+
+
+def validate_latest_user_state_card(check: RunCheck, user_state: dict[str, Any]) -> None:
+    """Ensure the strategy request receives a state card, not the full local record."""
+    missing = sorted(REQUIRED_LATEST_STATE_FIELDS - set(user_state))
+    if missing:
+        check.error(f"latest_user_state_card missing required state fields: {missing}")
+
+    leaked_fields = sorted(CONVERSATION_RECORD_LEVEL_FIELDS & set(user_state))
+    if leaked_fields:
+        check.error(f"latest_user_state_card must not contain conversation_record-level fields: {leaked_fields}")
 
 
 def describe_revisions(user_state: dict[str, Any]) -> list[str]:
@@ -593,6 +614,8 @@ def run_pipeline(
     user_state_card = turn_record.get("user_state_card")
     if not isinstance(user_state_card, dict) or not user_state_card:
         check.error("target turn must contain a non-empty user_state_card")
+    else:
+        validate_latest_user_state_card(check, user_state_card)
 
     message = current_user_message(record, target_turn_id)
     if not message:

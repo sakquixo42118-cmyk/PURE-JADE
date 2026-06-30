@@ -42,9 +42,11 @@ v0.2 是对 v0.1 的增量扩展，不推翻 v0.1。
 
 状态更新输入：
 
+<u>v0.2 中的状态更新输入仍是概念结构；v0.2.1 会把它落成可直接传给 API 的 `state_update_request`。实现时不能依赖同一个 API key 自动记住历史。</u>
+
 ```text
-previous_user_state_card
-+ dialogue_summary
+previous_state_snapshot（包含 previous_user_state_card + dialogue_summary + risk_memory + open_questions）
++ recent_dialogue_window
 + current_user_message
 -> updated_user_state_card
 ```
@@ -319,13 +321,15 @@ v0.2 用户状态卡保留 v0.1 的所有字段，并新增以下字段。
 
 第二部分仍然只负责策略决策，但输入应从“单轮用户状态卡”升级为“最新用户状态卡”。
 
+<u>更准确地说，第二部分的实际请求对象是 `strategy_decision_request`。它不读取完整 `conversation_record`，也不重新总结完整历史；历史摘要和当前轮新增证据应已经包含在 `latest_user_state_card.dialogue_summary` 与 `latest_user_state_card.new_evidence` 中。</u>
+
 ```text
 v0.1:
-当前用户状态卡
+current_user_message + 当前用户状态卡
 -> 策略决策卡
 
 v0.2:
-历史摘要 + 最新用户状态卡 + 当前轮新增证据
+current_user_message + latest_user_state_card + optional strategy_references
 -> 策略决策卡
 ```
 
@@ -340,6 +344,6 @@ v0.2:
 1. v0.1 测试和报告可以保留，作为单轮基线。
 2. 新增多轮测试集时，建议命名为 `examples/multiturn-test-cases-v0.2.json`。
 3. 第一部分应优先实现状态更新 Prompt。
-4. 第二部分只读取最新状态卡，不要绕过状态卡直接凭完整历史重判所有信息。
+4. <u>第二部分只读取最新状态卡，不要绕过状态卡直接凭完整历史重判所有信息；若需要历史信息，应由第一部分先写入最新状态卡。</u>
 5. 评价卡需要额外检查“状态更新是否合理”和“是否遗忘/误用历史信息”。
 

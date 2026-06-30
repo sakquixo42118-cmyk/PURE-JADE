@@ -231,9 +231,13 @@ latest_user_state_card + current_user_message + strategy_references
 
 程序还需要本地维护 `conversation_record`，保存完整 `dialogue_log`、每轮 `turn_records` 和下一轮要读取的 `current_state`。示例见 `examples/conversation-record-v0.2.1.json`。
 
+<u>这里的 `current_state` 是本地缓存，不是 API key 自带记忆；下一轮应从它构造 `previous_state_snapshot`，再和最近对话窗口、当前用户输入一起组成状态更新请求。</u>
+
 ## v0.2.1 第二部分脚本
 
 `scripts/run_strategy_pipeline_v021.py` 用于先跑通多轮协议下的第二部分策略决策。它不生成用户状态卡，也不生成最终回复或评价卡；它只从 `conversation_record` 中读取目标轮次的最新状态卡，并构造：
+
+<u>该脚本验证的是第二部分读取方式：`strategy_decision_request` 只包含当前用户原话、最新用户状态卡和可选策略参考，不直接把完整 `conversation_record` 传给模型。</u>
 
 ```text
 current_user_message
