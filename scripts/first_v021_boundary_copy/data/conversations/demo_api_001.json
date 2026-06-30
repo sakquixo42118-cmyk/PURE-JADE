@@ -1,0 +1,294 @@
+{
+  "conversation_id": "demo_api_001",
+  "schema_version": "0.2.1",
+  "created_at": "2026-06-30T11:49:13.630238",
+  "updated_at": "2026-06-30T11:55:23.750076",
+  "current_turn_id": 2,
+  "dialogue_log": [
+    {
+      "turn_id": 1,
+      "speaker": "user",
+      "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+      "timestamp": "2026-06-30T11:49:13.631112"
+    },
+    {
+      "turn_id": 2,
+      "speaker": "user",
+      "content": "主要是高数，我每天都刷题，但考试还是很差。",
+      "timestamp": "2026-06-30T11:55:23.750076"
+    }
+  ],
+  "turn_records": [
+    {
+      "turn_id": 1,
+      "state_update_request": {
+        "conversation_id": "demo_api_001",
+        "turn_id": 1,
+        "schema_version": "0.2.1",
+        "current_user_message": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+        "previous_state_snapshot": null,
+        "recent_dialogue_window": [
+          {
+            "turn_id": 1,
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "demo_api_001",
+        "turn_id": 1,
+        "previous_turn_id": null,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户诉说最近很累，每天复习但成绩无起色，感到努力没用，透露出无力感。",
+        "state_update_type": "initial",
+        "problem_summary": "持续复习但成绩不见起色，产生努力无效的无力感和疲惫。",
+        "emotion": [
+          "无助"
+        ],
+        "emotion_intensity": 2,
+        "need": [
+          "被理解",
+          "情绪陪伴",
+          "表达空间"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+        ],
+        "unknowns": [
+          "具体哪几门课遇到困难",
+          "目前采用的复习方法与节奏",
+          "睡眠和休息情况",
+          "是否尝试过寻求帮助"
+        ],
+        "carried_over_facts": [],
+        "new_evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "你能具体说明是哪些科目让你觉得没有起色吗？",
+          "你目前的复习方式是什么样的？",
+          "最近睡眠和休息还好吗？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.9
+      },
+      "generated_at": "2026-06-30T11:49:13.631112"
+    },
+    {
+      "turn_id": 2,
+      "state_update_request": {
+        "conversation_id": "demo_api_001",
+        "turn_id": 2,
+        "schema_version": "0.2.1",
+        "current_user_message": "主要是高数，我每天都刷题，但考试还是很差。",
+        "previous_state_snapshot": {
+          "turn_id": 1,
+          "dialogue_summary": "用户诉说最近很累，每天复习但成绩无起色，感到努力没用，透露出无力感。",
+          "user_state_card": {
+            "conversation_id": "demo_api_001",
+            "turn_id": 1,
+            "previous_turn_id": null,
+            "schema_version": "0.2",
+            "dialogue_summary": "用户诉说最近很累，每天复习但成绩无起色，感到努力没用，透露出无力感。",
+            "state_update_type": "initial",
+            "problem_summary": "持续复习但成绩不见起色，产生努力无效的无力感和疲惫。",
+            "emotion": [
+              "无助"
+            ],
+            "emotion_intensity": 2,
+            "need": [
+              "被理解",
+              "情绪陪伴",
+              "表达空间"
+            ],
+            "support_stage": "exploration",
+            "risk_level": "low",
+            "risk_signals": [],
+            "evidence": [
+              "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+            ],
+            "unknowns": [
+              "具体哪几门课遇到困难",
+              "目前采用的复习方法与节奏",
+              "睡眠和休息情况",
+              "是否尝试过寻求帮助"
+            ],
+            "carried_over_facts": [],
+            "new_evidence": [
+              "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。"
+            ],
+            "revised_fields": [],
+            "open_questions": [
+              "你能具体说明是哪些科目让你觉得没有起色吗？",
+              "你目前的复习方式是什么样的？",
+              "最近睡眠和休息还好吗？"
+            ],
+            "risk_memory": {
+              "highest_risk_level": "low",
+              "risk_signals_seen": [],
+              "safety_followup_needed": false
+            },
+            "confidence": 0.8
+          },
+          "risk_memory": {
+            "highest_risk_level": "low",
+            "risk_signals_seen": [],
+            "safety_followup_needed": false
+          },
+          "open_questions": [
+            "你能具体说明是哪些科目让你觉得没有起色吗？",
+            "你目前的复习方式是什么样的？",
+            "最近睡眠和休息还好吗？"
+          ]
+        },
+        "recent_dialogue_window": [
+          {
+            "speaker": "user",
+            "content": "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+            "turn_id": 1
+          },
+          {
+            "turn_id": 2,
+            "speaker": "user",
+            "content": "主要是高数，我每天都刷题，但考试还是很差。"
+          }
+        ],
+        "update_policy": {
+          "max_summary_chars": 180,
+          "max_recent_turns": 3,
+          "preserve_risk_memory": true,
+          "require_evidence_for_revision": true
+        }
+      },
+      "user_state_card": {
+        "conversation_id": "demo_api_001",
+        "turn_id": 2,
+        "previous_turn_id": 1,
+        "schema_version": "0.2",
+        "dialogue_summary": "用户诉说最近很累，主要是高数困难，每天刷题但考试成绩仍差，感到无助和沮丧。",
+        "state_update_type": "revised",
+        "problem_summary": "高数科目通过每天刷题努力但考试成绩仍差，产生无助和沮丧情绪。",
+        "emotion": [
+          "无助",
+          "沮丧"
+        ],
+        "emotion_intensity": 2,
+        "need": [
+          "被理解",
+          "情绪陪伴",
+          "表达空间"
+        ],
+        "support_stage": "exploration",
+        "risk_level": "low",
+        "risk_signals": [],
+        "evidence": [
+          "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+          "主要是高数，我每天都刷题，但考试还是很差。"
+        ],
+        "unknowns": [
+          "高数刷题的具体方法是否有效，是否理解概念",
+          "睡眠和休息情况",
+          "是否尝试过寻求帮助",
+          "考试时是否存在焦虑"
+        ],
+        "carried_over_facts": [
+          "用户感到努力无效，成绩无起色，很疲惫"
+        ],
+        "new_evidence": [
+          "主要是高数，我每天都刷题，但考试还是很差。"
+        ],
+        "revised_fields": [],
+        "open_questions": [
+          "你目前刷题的方式具体是怎样的？有总结错题吗？",
+          "最近睡眠和休息还好吗？",
+          "你考试时是否感到特别紧张？"
+        ],
+        "risk_memory": {
+          "highest_risk_level": "low",
+          "risk_signals_seen": [],
+          "safety_followup_needed": false
+        },
+        "confidence": 0.85
+      },
+      "generated_at": "2026-06-30T11:55:23.750076"
+    }
+  ],
+  "current_state": {
+    "dialogue_summary": "用户诉说最近很累，主要是高数困难，每天刷题但考试成绩仍差，感到无助和沮丧。",
+    "user_state_card": {
+      "conversation_id": "demo_api_001",
+      "turn_id": 2,
+      "previous_turn_id": 1,
+      "schema_version": "0.2",
+      "dialogue_summary": "用户诉说最近很累，主要是高数困难，每天刷题但考试成绩仍差，感到无助和沮丧。",
+      "state_update_type": "revised",
+      "problem_summary": "高数科目通过每天刷题努力但考试成绩仍差，产生无助和沮丧情绪。",
+      "emotion": [
+        "无助",
+        "沮丧"
+      ],
+      "emotion_intensity": 2,
+      "need": [
+        "被理解",
+        "情绪陪伴",
+        "表达空间"
+      ],
+      "support_stage": "exploration",
+      "risk_level": "low",
+      "risk_signals": [],
+      "evidence": [
+        "我最近真的很累，明明每天都在复习，但成绩还是没有起色。我感觉怎么努力都没有用。",
+        "主要是高数，我每天都刷题，但考试还是很差。"
+      ],
+      "unknowns": [
+        "高数刷题的具体方法是否有效，是否理解概念",
+        "睡眠和休息情况",
+        "是否尝试过寻求帮助",
+        "考试时是否存在焦虑"
+      ],
+      "carried_over_facts": [
+        "用户感到努力无效，成绩无起色，很疲惫"
+      ],
+      "new_evidence": [
+        "主要是高数，我每天都刷题，但考试还是很差。"
+      ],
+      "revised_fields": [],
+      "open_questions": [
+        "你目前刷题的方式具体是怎样的？有总结错题吗？",
+        "最近睡眠和休息还好吗？",
+        "你考试时是否感到特别紧张？"
+      ],
+      "risk_memory": {
+        "highest_risk_level": "low",
+        "risk_signals_seen": [],
+        "safety_followup_needed": false
+      },
+      "confidence": 0.85
+    },
+    "risk_memory": {
+      "highest_risk_level": "low",
+      "risk_signals_seen": [],
+      "safety_followup_needed": false
+    },
+    "open_questions": [
+      "你目前刷题的方式具体是怎样的？有总结错题吗？",
+      "最近睡眠和休息还好吗？",
+      "你考试时是否感到特别紧张？"
+    ]
+  }
+}
