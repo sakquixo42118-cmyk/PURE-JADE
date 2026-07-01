@@ -86,7 +86,7 @@ API 模式用于让大模型实际完成第二部分策略决策：
 -> 本地校验
 ```
 
-API 配置、HTTP 请求和 JSON 解析已封装在 `scripts/pure_jade_api.py`；组员可先按 `docs/api-integration.md` 运行 `scripts/api_smoke_test.py` 检查配置和连通性。
+API 配置、HTTP 请求和 JSON 解析已封装在 `scripts/pure_jade_api.py`；组员可先按 `docs/operations/api-integration.md` 运行 `scripts/api_smoke_test.py` 检查配置和连通性。
 
 运行：
 
@@ -197,7 +197,7 @@ ESConv 不直接提供最终回复。它在本模块中只提供策略参考：
 
 ## v0.2 多轮输入
 
-`docs/schema-v0.2.md` 增加了多轮状态更新字段。第二部分的职责不变，仍然是输出共情策略决策卡；变化在于输入应使用“最新用户状态卡”，而不是只看当前一句话。
+`docs/schema/schema-v0.2.md` 增加了多轮状态更新字段。第二部分的职责不变，仍然是输出共情策略决策卡；变化在于输入应使用“最新用户状态卡”，而不是只看当前一句话。
 
 多轮时推荐输入：
 
@@ -217,7 +217,7 @@ ESConv 不直接提供最终回复。它在本模块中只提供策略参考：
 
 v0.1 测试仍保留为单轮基线；v0.2 后续应新增多轮测试集，参考 `examples/multiturn-test-cases-v0.2.json`。
 
-`docs/schema-v0.2.1.md` 进一步明确了多轮实现契约：
+`docs/schema/schema-v0.2.1.md` 进一步明确了多轮实现契约：
 
 ```text
 第一部分状态更新 API:

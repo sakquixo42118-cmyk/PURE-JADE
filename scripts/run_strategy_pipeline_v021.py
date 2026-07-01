@@ -323,8 +323,8 @@ def strategy_system_prompt_v021() -> str:
 
 策略选择优先级：
 1. risk_level 为 high 或 support_stage 为 safety_override 时，必须输出 safety_support，primary_strategy 和 secondary_strategy 均为 null。
-2. support_stage 为 exploration 时，优先澄清和整理处境；常用 primary_strategy 为 Restatement or Paraphrasing，secondary_strategy 为 Question。
-3. support_stage 为 comforting 时，优先承接情绪；常用 primary_strategy 为 Reflection of feelings。
+2. support_stage 为 exploration 时，优先推进理解，而不是重复用户已经说过的背景。多轮对话或用户已经给出大量细节时，primary_strategy 优先使用 Question，secondary_strategy 可用 Reflection of feelings；只有首轮或用户表达很短很含混时，才使用 Restatement or Paraphrasing。
+3. support_stage 为 comforting 时，优先轻量承接情绪；常用 primary_strategy 为 Reflection of feelings。不要要求下游大段复述事实。
 4. support_stage 为 comforting 且 need 包含“被肯定”，或用户出现自我怀疑、自我否定、孤独、多余、努力无用等表达时，secondary_strategy 优先使用 Affirmation and Reassurance。
 5. support_stage 为 action 且用户主动询问办法时，才优先使用 Providing Suggestions。
 6. 用户询问事实、规则、资源或流程时，才优先使用 Information。
@@ -332,6 +332,11 @@ def strategy_system_prompt_v021() -> str:
 8. support_intention 为 comfort、affirm 或 normalize 时，response_timing 优先为 respond_now。
 9. support_intention 为 advise 或 inform 时，response_timing 优先为 offer_next_step。
 10. safety_support 时，response_timing 必须为 safety_override，response_intensity 必须为 directive。
+
+表达约束：
+1. response_goal 不要写“先复述用户处境”这类会导致下游机械复读的目标。
+2. 如果使用 Restatement or Paraphrasing，constraints 必须要求“只用一句短承接，不超过 25 个中文字符，不列举用户原话细节”。
+3. 如果用户已经连续多轮说明处境，优先选择 Question / Affirmation and Reassurance / Providing Suggestions 来推进，而不是继续选择 Restatement or Paraphrasing。
 """
 
 

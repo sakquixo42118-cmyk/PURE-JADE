@@ -2,7 +2,15 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Local secrets
 .env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+
 .idea/
 .vscode/
 dist/
@@ -13,3 +21,7 @@ data/raw/
 data/processed/*
 reports/*.json
 reports/**/*.json
+
+# Local conversation records created by chain smoke tests / frontend runs
+scripts/*/data/conversations/chain_v021_*.json
+scripts/*/data/conversations/frontend_*.json

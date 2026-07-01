@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -44,6 +45,18 @@ ALLOWED_ESCONV_STRATEGIES = {
     "Others",
 }
 ALLOWED_REALIZED_STRATEGIES = ALLOWED_ESCONV_STRATEGIES | {"Safety Guidance"}
+UNSAFE_SAFETY_FOLLOWUP_PATTERNS = (
+    "具体怎么伤害",
+    "怎么伤害自己",
+    "伤害自己的方法",
+    "具体计划",
+    "计划伤害自己",
+)
+SAFETY_FALLBACK_RESPONSE = (
+    "你提到这样的念头让我很在意。此刻最重要的是先保证安全：请尽量待在有人能陪伴或容易被联系到的地方，"
+    "联系一个你信任的人，直接告诉对方你现在需要陪一下。如果这种念头变强，或你担心自己会失控，"
+    "请马上联系当地紧急服务、学校值班老师或当地危机支持热线。"
+)
 ALLOWED_TONE_STYLES = {
     "warm_and_calm",
     "validating",
@@ -152,6 +165,143 @@ def as_list(value: Any) -> list[Any]:
 
 def count_questions(text: str) -> int:
     return text.count("?") + text.count("？")
+
+
+def split_first_sentence(text: str) -> tuple[str, str]:
+    for index, char in enumerate(text):
+        if char in {"。", "！", "？", "!", "?"}:
+            return text[: index + 1].strip(), text[index + 1 :].strip()
+    return text.strip(), ""
+
+
+def latest_user_message(behavior_request: dict[str, Any]) -> str:
+    turn_id = behavior_request.get("turn_id")
+    messages = behavior_request.get("recent_dialogue_window")
+    if not isinstance(messages, list):
+        return ""
+    for item in reversed(messages):
+        if (
+            isinstance(item, dict)
+            and item.get("speaker") == "user"
+            and (turn_id is None or item.get("turn_id") == turn_id)
+            and isinstance(item.get("content"), str)
+        ):
+            return item["content"].strip()
+    for item in reversed(messages):
+        if isinstance(item, dict) and item.get("speaker") == "user" and isinstance(item.get("content"), str):
+            return item["content"].strip()
+    return ""
+
+
+def compact_acknowledgement(user_message: str, strategy_card: dict[str, Any]) -> str:
+    support_intention = strategy_card.get("support_intention")
+    if support_intention in {"advise", "inform"}:
+        return "可以，我们先把它缩小到眼前能做的一步。"
+    if any(keyword in user_message for keyword in ("朋友", "社交", "孤独", "封闭", "一个人", "圈子")):
+        return "这种越来越退回到自己一个人的状态，确实很消耗人。"
+    if any(keyword in user_message for keyword in ("考试", "成绩", "高数", "复习", "刷题", "学习")):
+        return "一直用力却看不到变化，真的会把人拖得很累。"
+    if any(keyword in user_message for keyword in ("妈妈", "爸爸", "父母", "家里", "吵架")):
+        return "想说清楚却总变成争执，确实会让人很委屈。"
+    if any(keyword in user_message for keyword in ("不想醒", "伤害自己", "自杀", "活着")):
+        return "这件事需要先认真照顾你的安全。"
+    return "这段状态确实不轻松。"
+
+
+def simplify_followup_tail(tail: str, user_message: str) -> str:
+    if "社交圈子逐渐缩小" in tail or ("社交" in user_message and "进入大学" in tail and "最近" in tail):
+        return "这是进入大学后慢慢发生的，还是最近突然变明显的？"
+    if "没有目标" in tail and "持续多久" in tail:
+        return "这种没劲的状态大概持续多久了？"
+    if "错题" in tail and "哪类" in tail:
+        return "最卡住你的题型是哪一类？"
+    return tail
+
+
+def repeated_opening_score(sentence: str, user_message: str) -> int:
+    score = 0
+    if len(sentence) >= 45:
+        score += 1
+    if sentence.count("，") + sentence.count("、") >= 3:
+        score += 1
+    overlap_keywords = (
+        "现实",
+        "无趣",
+        "朋友",
+        "社交",
+        "封闭",
+        "进取心",
+        "网上",
+        "快感",
+        "老东西",
+        "成绩",
+        "考试",
+        "复习",
+        "刷题",
+        "妈妈",
+        "爸爸",
+        "吵架",
+        "委屈",
+        "孤独",
+        "圈子",
+    )
+    keyword_hits = sum(1 for keyword in overlap_keywords if keyword in sentence and keyword in user_message)
+    score += min(keyword_hits, 3)
+    for chunk in re.split(r"[，。！？、；;,.!?\\s]+", user_message):
+        chunk = chunk.strip()
+        if len(chunk) >= 4 and chunk in sentence:
+            score += 1
+    if any(marker in sentence for marker in ("你说", "你提到", "听起来", "我听到", "好像", "这种", "真的很")):
+        score += 1
+    return score
+
+
+def compress_repetitive_opening(text: str, behavior_request: dict[str, Any]) -> tuple[str, bool]:
+    response = text.strip()
+    if not response:
+        return text, False
+    first, rest = split_first_sentence(response)
+    if not first or not rest:
+        return text, False
+    strategy_card = behavior_request.get("strategy_decision_card")
+    strategy_card = strategy_card if isinstance(strategy_card, dict) else {}
+    if strategy_card.get("safety_override") is True:
+        return text, False
+
+    user_message = latest_user_message(behavior_request)
+    if not user_message:
+        return text, False
+    if repeated_opening_score(first, user_message) < 3:
+        return text, False
+
+    ack = compact_acknowledgement(user_message, strategy_card)
+    remaining_first, remaining_rest = split_first_sentence(rest)
+    # Drop a second generic empathy sentence after the long restatement.
+    generic_empathy = any(
+        phrase in remaining_first
+        for phrase in ("真的很不好受", "真的会很难受", "确实很难", "确实很累", "很不容易", "压在心上")
+    )
+    tail = remaining_rest if generic_empathy and remaining_rest else rest
+    tail = simplify_followup_tail(tail, user_message)
+    compacted = (ack + tail).strip()
+    return compacted, compacted != response
+
+
+def limit_question_marks(text: str, max_questions: int = 1) -> tuple[str, bool]:
+    question_count = 0
+    changed = False
+    chars: list[str] = []
+    for char in text:
+        if char in {"?", "？"}:
+            question_count += 1
+            if question_count > max_questions:
+                chars.append("。")
+                changed = True
+            else:
+                chars.append(char)
+        else:
+            chars.append(char)
+    return "".join(chars), changed
 
 
 def default_report_path(mode: str, source_kind: str, turn_id: int | None, case_id: str | None) -> Path:
@@ -330,6 +480,14 @@ uses_previous_context, context_used。
 8. action 只能是 none, pause, offer_resource 或 null。
 9. 如果 safety_override 为 true，必须使用安全优先回应：strategy_realization 使用 Safety Guidance，safety_message_used 为 true，tone_style 为 safety_directive，避免诊断、责备、承诺和危险方法细节。
 10. 如果目标版本是 v0.2，uses_previous_context 和 context_used 只能描述实际用到的历史对话信息，不要引用 user_state_card。
+
+自然表达规则：
+1. 除安全场景外，不要用模板化开头。避免反复使用“我听到你说”“听起来”“我能感受到”“我理解你现在”“你提到”等句式。
+2. Restatement or Paraphrasing 和 Reflection of feelings 不是逐字复读用户信息；只需要用自然语言轻轻承接，可以压缩成半句或一句。
+3. 多轮对话中不要重复上一轮已经承接过的背景。优先回应当前轮的新信息、新请求或情绪变化。
+4. 如果用户明确要建议、步骤、话术或行动方案，先给可执行内容，再简短照顾情绪，不要先大段复述。
+5. 回复要像真实对话，不要像评分表说明。可以使用“这一步可以先缩小一点”“先不用急着证明自己”“今晚可以只做一件事”这类自然开头。
+6. text_response 中最多保留一个核心问题；如果已经给出行动建议，结尾问题要短。
 """
 
 
@@ -358,6 +516,11 @@ def behavior_user_prompt(behavior_request: dict[str, Any]) -> str:
 
 [重要边界]
 不要使用第一部分用户状态卡字段。即使请求来源是 conversation_record，也只能使用 recent_dialogue_window/dialogue 和 strategy_decision_card。
+
+[表达风格]
+- 避免模板化开头，不要每轮都从“我听到你说/听起来/我能感受到”开始。
+- 可以自然承接情绪，但不要机械重复用户原话。
+- 如果本轮用户在要办法、话术或下一步，直接进入具体帮助。
 """
 
 
@@ -366,6 +529,145 @@ def build_messages(behavior_request: dict[str, Any]) -> list[dict[str, str]]:
         {"role": "system", "content": behavior_system_prompt()},
         {"role": "user", "content": behavior_user_prompt(behavior_request)},
     ]
+
+
+def _string_items(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [item.strip() for item in value if isinstance(item, str) and item.strip()]
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    return []
+
+
+def _choose_text_span(value: Any, response: str) -> tuple[str, bool]:
+    candidates = _string_items(value)
+    if not candidates:
+        return "", False
+    variants: list[str] = []
+    for item in candidates:
+        variants.append(item)
+        period_variant = item.replace("？", "。").replace("?", "。")
+        if period_variant not in variants:
+            variants.append(period_variant)
+
+    exact_matches = [item for item in variants if item in response]
+    if exact_matches:
+        chosen = max(exact_matches, key=len)
+        return chosen, chosen != value
+
+    joined = "".join(variants)
+    if joined and joined in response:
+        return joined, True
+
+    joined_with_space = " ".join(variants)
+    if joined_with_space and joined_with_space in response:
+        return joined_with_space, True
+
+    if response:
+        return response, True
+    return candidates[0], not isinstance(value, str)
+
+
+def normalize_behavior_card(card: Any, behavior_request: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Normalize common API shape drift before strict schema validation."""
+    if not isinstance(card, dict):
+        return {}, ["api output was not an object"]
+
+    normalized = json.loads(json.dumps(card, ensure_ascii=False))
+    changes: list[str] = []
+    strategy_card = behavior_request.get("strategy_decision_card")
+    safety_override = isinstance(strategy_card, dict) and strategy_card.get("safety_override") is True
+    response = normalized.get("text_response") if isinstance(normalized.get("text_response"), str) else ""
+    if response:
+        limited_response, question_limit_changed = limit_question_marks(response)
+        if question_limit_changed:
+            normalized["text_response"] = limited_response
+            response = limited_response
+            changes.append("converted extra question marks in text_response to periods")
+    if safety_override and (
+        count_questions(response) > 0 or any(pattern in response for pattern in UNSAFE_SAFETY_FOLLOWUP_PATTERNS)
+    ):
+        normalized["text_response"] = SAFETY_FALLBACK_RESPONSE
+        normalized["tone_style"] = "safety_directive"
+        normalized["facial_expression"] = "concerned"
+        normalized["action"] = "offer_resource"
+        normalized["safety_message_used"] = True
+        normalized["follow_up_question_count"] = 0
+        normalized["strategy_realization"] = [{"strategy": "Safety Guidance", "text_span": SAFETY_FALLBACK_RESPONSE}]
+        response = SAFETY_FALLBACK_RESPONSE
+        changes.append("replaced unsafe safety follow-up with local safety fallback response")
+    elif response:
+        compacted_response, compacted = compress_repetitive_opening(response, behavior_request)
+        if compacted:
+            normalized["text_response"] = compacted_response
+            response = compacted_response
+            changes.append("compressed repetitive opening in text_response")
+
+    context_used = normalized.get("context_used")
+    if isinstance(context_used, str):
+        normalized["context_used"] = [context_used] if context_used.strip() else []
+        changes.append("wrapped string context_used as list")
+    elif context_used is None and behavior_request.get("target_behavior_schema_version") == "0.2":
+        normalized["context_used"] = []
+        changes.append("filled missing context_used with empty list")
+    elif isinstance(context_used, list):
+        cleaned_context = [item.strip() for item in context_used if isinstance(item, str) and item.strip()]
+        if cleaned_context != context_used:
+            normalized["context_used"] = cleaned_context
+            changes.append("removed invalid context_used items")
+
+    if behavior_request.get("target_behavior_schema_version") == "0.2" and "uses_previous_context" not in normalized:
+        normalized["uses_previous_context"] = bool(normalized.get("context_used"))
+        changes.append("filled missing uses_previous_context")
+
+    realization = normalized.get("strategy_realization")
+    if isinstance(realization, dict):
+        realization = [realization]
+        normalized["strategy_realization"] = realization
+        changes.append("wrapped strategy_realization object as list")
+    elif not isinstance(realization, list):
+        realization = []
+        normalized["strategy_realization"] = realization
+        changes.append("filled invalid strategy_realization with empty list")
+
+    if safety_override and not realization:
+        normalized["strategy_realization"] = [
+            {
+                "strategy": "Safety Guidance",
+                "text_span": response,
+            }
+        ]
+        changes.append("created Safety Guidance realization for safety_override")
+        realization = normalized["strategy_realization"]
+
+    for item in realization:
+        if not isinstance(item, dict):
+            continue
+        if "strategy" not in item and isinstance(item.get("strategy_name"), str):
+            item["strategy"] = item["strategy_name"]
+            changes.append("mapped strategy_name to strategy")
+        if safety_override and item.get("strategy") not in ALLOWED_REALIZED_STRATEGIES:
+            item["strategy"] = "Safety Guidance"
+            changes.append("filled safety_override realization strategy")
+
+        chosen_span, changed = _choose_text_span(item.get("text_span"), response)
+        if changed:
+            item["text_span"] = chosen_span
+            changes.append("normalized strategy_realization.text_span")
+        elif "text_span" not in item and response:
+            item["text_span"] = response
+            changes.append("filled missing strategy_realization.text_span")
+
+    if safety_override and normalized.get("follow_up_question_count") != 0:
+        normalized["follow_up_question_count"] = 0
+        changes.append("set follow_up_question_count=0 for safety_override")
+    elif not safety_override:
+        literal_question_count = count_questions(response)
+        if normalized.get("follow_up_question_count") != literal_question_count:
+            normalized["follow_up_question_count"] = literal_question_count
+            changes.append("aligned follow_up_question_count with text_response")
+
+    return normalized, changes
 
 
 def validate_string_list(check: BehaviorCheck, field_name: str, values: Any, min_items: int, max_items: int) -> None:
@@ -569,7 +871,10 @@ def api_behavior_card(
             )
             continue
 
-        latest_card = parsed_card or {}
+        latest_card, normalization_changes = normalize_behavior_card(parsed_card or {}, behavior_request)
+        if normalization_changes:
+            attempt_record["normalization_changes"] = normalization_changes
+            attempt_record["normalized_output"] = latest_card
         strategy_card = behavior_request.get("strategy_decision_card") or {}
         check = BehaviorCheck(
             str(strategy_card.get("conversation_id", "unknown_conversation")),

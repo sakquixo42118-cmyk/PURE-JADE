@@ -12,6 +12,7 @@ import json
 import os
 import re
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import httpx
@@ -41,16 +42,43 @@ from recorder import (
 # 环境变量
 # ---------------------------------------------------------------------------
 
+REPO_ROOT_ENV = Path(__file__).resolve().parents[2] / ".env"
+load_dotenv(REPO_ROOT_ENV)
 load_dotenv()
+
+
+def _env_first(*names: str, default: str = "") -> str:
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return default
+
+
+def _chat_base_url(value: str) -> str:
+    normalized = value.strip().rstrip("/")
+    suffix = "/chat/completions"
+    if normalized.endswith(suffix):
+        return normalized[: -len(suffix)]
+    return normalized
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() not in {"0", "false", "no", "off"}
 
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 
 _RUNTIME_CONFIG: dict = {
-    "llm_api_key": os.getenv("LLM_API_KEY", ""),
-    "llm_base_url": os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
-    "llm_model": os.getenv("LLM_MODEL", "gpt-4o-mini"),
-    "llm_use_json_mode": os.getenv("LLM_USE_JSON_MODE", "false").lower() == "true",
+    "llm_api_key": _env_first("PURE_JADE_API_KEY", "LLM_API_KEY"),
+    "llm_base_url": _chat_base_url(
+        _env_first("PURE_JADE_API_URL", "LLM_BASE_URL", default="https://api.openai.com/v1")
+    ),
+    "llm_model": _env_first("PURE_JADE_API_MODEL", "LLM_MODEL", default="gpt-4o-mini"),
+    "llm_use_json_mode": _env_bool("PURE_JADE_API_JSON_MODE", _env_bool("LLM_USE_JSON_MODE", False)),
 }
 
 

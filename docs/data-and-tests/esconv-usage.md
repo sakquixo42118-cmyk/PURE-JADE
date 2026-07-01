@@ -163,7 +163,7 @@ python scripts\extract_esconv_examples.py --output data\processed\esconv_example
 
 首批人工筛选的 few-shot 策略参考案例见：
 
-- `docs/few-shot-selection.md`
+- `docs/data-and-tests/few-shot-selection.md`
 - `examples/strategy-references-v0.1.json`
 
 这些案例只保留中文摘要、推断用户状态、策略理由和回应模式，不保留 ESConv 原始支持者回复全文。它们只能进入策略决策 Prompt，不进入最终行为回应生成 Prompt。

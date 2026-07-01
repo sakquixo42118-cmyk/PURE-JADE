@@ -13,12 +13,12 @@
 策略决策模块接收三类输入：
 
 1. 原始用户输入和必要的历史对话。
-2. 用户状态卡，字段遵循 `docs/schema-v0.1.md`。
+2. 用户状态卡，字段遵循 `docs/schema/schema-v0.1.md`。
 3. 可选 ESConv 策略参考案例摘要，第一版可以为空数组。
 
 ### 输出
 
-输出必须是共情策略决策卡，字段遵循 `docs/schema-v0.1.md` 中的 `strategy_decision_card`。
+输出必须是共情策略决策卡，字段遵循 `docs/schema/schema-v0.1.md` 中的 `strategy_decision_card`。
 
 核心字段包括：
 

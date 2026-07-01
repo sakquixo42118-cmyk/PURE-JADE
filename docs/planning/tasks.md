@@ -201,7 +201,7 @@ PURE-JADE：面向情绪支持场景的共情策略生成原型系统
 
 - [ ] 完成 `README.md`
 - [ ] 完成 `AGENTS.md`
-- [ ] 完成 `docs/tasks.md`
+- [ ] 完成 `docs/planning/tasks.md`
 - [ ] 整理仓库结构
 
 ### Day 2
@@ -263,8 +263,8 @@ PURE-JADE：面向情绪支持场景的共情策略生成原型系统
 
 如果由 Codex 继续推进，建议按以下顺序：
 
-1. 根据 `OTHER/CODEX_CLOUD_HANDOFF.md` 和本文件生成 `docs/schema-v0.1.md`
-2. 生成 `docs/strategy-mapping.md`
+1. 根据 `OTHER/CODEX_CLOUD_HANDOFF.md` 和本文件生成 `docs/schema/schema-v0.1.md`
+2. 生成 `docs/strategy/strategy-mapping.md`
 3. 生成研究内容二的策略决策 Prompt
 4. 生成 3 个自建测试案例
 5. 设计 ESConv 典型案例库格式
