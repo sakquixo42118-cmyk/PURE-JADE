@@ -153,7 +153,7 @@ PURE-JADE：面向情绪支持场景的共情策略生成原型系统
 
 至少完成三组：
 
-- [ ] Baseline：用户输入直接生成回复
+- [x] Baseline：用户输入直接生成回复
 - [ ] Pipeline：状态卡 + 策略卡 + 行为卡，不检索 ESConv
 - [ ] Pipeline + ESConv：完整卡片流程并使用 ESConv 示例
 

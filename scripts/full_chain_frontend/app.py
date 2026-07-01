@@ -1,7 +1,6 @@
-"""PURE-JADE v0.2.1 完整链路 runner 的轻量 Tkinter 前端。
+"""PURE-JADE 完整链路 runner 的轻量 Tkinter 前端。
 
-界面只把 scripts/run_full_chain_v021.py 当作黑盒 CLI 调用，不 import 或修改
-first/third/forth 阶段源码。
+界面把所选完整链路 runner 当作黑盒 CLI 调用，不 import 或修改阶段源码。
 """
 
 from __future__ import annotations
@@ -21,8 +20,47 @@ from tkinter.scrolledtext import ScrolledText
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-RUNNER_PATH = PROJECT_ROOT / "scripts" / "run_full_chain_v021.py"
-OUTPUT_ROOT = PROJECT_ROOT / "reports" / "full_chain_v021"
+CHAIN_PROFILES = {
+    "v0.2.1 当前版（稳定/规则较强）": {
+        "runner": PROJECT_ROOT / "scripts" / "run_full_chain_v021.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v021",
+        "record_name": "conversation_record_v021_chain.json",
+        "supports_eval_mode": False,
+    },
+    "v0.2.2 优化版（副本/少规则）": {
+        "runner": PROJECT_ROOT / "scripts" / "full_chain_v022" / "run_full_chain_v022.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v022",
+        "record_name": "conversation_record_v022_chain.json",
+        "supports_eval_mode": False,
+    },
+    "v0.2.3 诊断评价版（一次 API）": {
+        "runner": PROJECT_ROOT / "scripts" / "full_chain_v023" / "run_full_chain_v023.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v023",
+        "record_name": "conversation_record_v023_chain.json",
+        "supports_eval_mode": True,
+    },
+    "v0.2.4 现实任务敏感版": {
+        "runner": PROJECT_ROOT / "scripts" / "full_chain_v024" / "run_full_chain_v024.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v024",
+        "record_name": "conversation_record_v024_chain.json",
+        "supports_eval_mode": True,
+    },
+    "Direct API Baseline（Minimal Support，一次 API）": {
+        "runner": PROJECT_ROOT / "scripts" / "direct_api_baseline" / "run_direct_api_baseline.py",
+        "output_root": PROJECT_ROOT / "reports" / "direct_api_baseline",
+        "record_name": "conversation_record_direct_baseline.json",
+        "supports_eval_mode": False,
+        "extra_args": ["--baseline-mode", "minimal-support"],
+    },
+    "Direct API Baseline（Raw，一次 API）": {
+        "runner": PROJECT_ROOT / "scripts" / "direct_api_baseline" / "run_direct_api_baseline.py",
+        "output_root": PROJECT_ROOT / "reports" / "direct_api_baseline",
+        "record_name": "conversation_record_direct_baseline.json",
+        "supports_eval_mode": False,
+        "extra_args": ["--baseline-mode", "raw"],
+    },
+}
+DEFAULT_CHAIN_PROFILE = "v0.2.1 当前版（稳定/规则较强）"
 
 STRATEGY_MODES = {
     "API（真实调用）": "api",
@@ -43,6 +81,10 @@ EVAL_SCOPES = {
     "只评估最新一轮": "current-turn",
     "评估所有已完成轮次": "all-turns",
     "最新一轮 + 全部轮次": "both",
+}
+EVAL_MODES = {
+    "Fast（一次 API 诊断评价）": "fast",
+    "Full（旧版逐维评价）": "full",
 }
 INVALID_RUN_ID_CHARS = set('<>:"/\\|?*')
 BG = "#f4f6f8"
@@ -86,10 +128,10 @@ def existing_path_from_summary(value: Any) -> Path | None:
     return path if path.exists() else None
 
 
-def find_run_output_dir(run_id: str) -> Path | None:
+def find_run_output_dir(run_id: str, output_root: Path) -> Path | None:
     if not run_id:
         return None
-    conversations_root = OUTPUT_ROOT / "conversations"
+    conversations_root = output_root / "conversations"
     if not conversations_root.exists():
         return None
     matches = sorted(
@@ -173,7 +215,7 @@ def build_overview(
     if isinstance(modes, dict):
         lines.append("")
         lines.append("运行模式：")
-        for key in ("strategy_mode", "behavior_mode", "evaluation_skipped", "eval_stage"):
+        for key in ("strategy_mode", "behavior_mode", "evaluation_skipped", "eval_mode", "eval_stage"):
             lines.append(f"  {key}: {modes.get(key)}")
 
     stages = summary.get("stages")
@@ -211,6 +253,7 @@ def build_overview(
     lines.append("")
     lines.append("输出文件：")
     for name in (
+        "01_direct_request_report.json",
         "01_first_state_report.json",
         "02_strategy_report.json",
         "03_behavior_report.json",
@@ -221,6 +264,10 @@ def build_overview(
         "08_conversation_summary_report.json",
         "09_dialogue_review_report.json",
         "conversation_record_v021_chain.json",
+        "conversation_record_v022_chain.json",
+        "conversation_record_v023_chain.json",
+        "conversation_record_v024_chain.json",
+        "conversation_record_direct_baseline.json",
         "full_chain_summary.json",
     ):
         path = output_dir / name
@@ -271,8 +318,14 @@ def load_result_views(output_dir: Path) -> dict[str, str]:
     paths = summary.get("paths") if isinstance(summary.get("paths"), dict) else {}
     record_path = existing_path_from_summary(paths.get("working_record")) if paths else None
     if record_path is None:
-        fallback = output_dir / "conversation_record_v021_chain.json"
-        record_path = fallback if fallback.exists() else None
+        fallbacks = [
+            output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v024_chain.json",
+            output_dir / "conversation_record_v023_chain.json",
+            output_dir / "conversation_record_v022_chain.json",
+            output_dir / "conversation_record_v021_chain.json",
+        ]
+        record_path = next((path for path in fallbacks if path.exists()), None)
 
     record: dict[str, Any] | None = None
     turn_record: dict[str, Any] | None = None
@@ -353,7 +406,7 @@ def load_result_views(output_dir: Path) -> dict[str, str]:
 class FullChainFrontend(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("PURE-JADE v0.2.1 完整链路")
+        self.title("PURE-JADE 完整链路")
         self.geometry("1240x800")
         self.minsize(1040, 680)
         self.configure(bg=BG)
@@ -364,6 +417,10 @@ class FullChainFrontend(tk.Tk):
         self.current_output_dir: Path | None = None
         self.last_record_path: Path | None = None
 
+        self.chain_profile = tk.StringVar(value=DEFAULT_CHAIN_PROFILE)
+        self.api_key = tk.StringVar()
+        self.api_url = tk.StringVar()
+        self.api_model = tk.StringVar()
         self.source_mode = tk.StringVar(value="message")
         self.run_id = tk.StringVar(value=default_run_id())
         self.record_path = tk.StringVar()
@@ -371,14 +428,27 @@ class FullChainFrontend(tk.Tk):
         self.behavior_mode = tk.StringVar(value="Dry-run（只检查输入）")
         self.eval_stage = tk.StringVar(value="行为回应质量（推荐）")
         self.eval_scope = tk.StringVar(value="只评估最新一轮")
+        self.eval_mode = tk.StringVar(value="Fast（一次 API 诊断评价）")
         self.skip_eval = tk.BooleanVar(value=True)
         self.status = tk.StringVar(value="就绪。默认模式不会调用 API。")
-        self.output_path = tk.StringVar(value=str(OUTPUT_ROOT))
+        self.output_path = tk.StringVar(value=str(self._active_output_root()))
 
         self._configure_style()
         self._build_layout()
         self._sync_input_mode()
         self.after(100, self._poll_events)
+
+    def _active_chain_config(self) -> dict[str, Any]:
+        return CHAIN_PROFILES.get(self.chain_profile.get(), CHAIN_PROFILES[DEFAULT_CHAIN_PROFILE])
+
+    def _active_runner_path(self) -> Path:
+        return self._active_chain_config()["runner"]
+
+    def _active_output_root(self) -> Path:
+        return self._active_chain_config()["output_root"]
+
+    def _active_record_name(self) -> str:
+        return str(self._active_chain_config()["record_name"])
 
     def _configure_style(self) -> None:
         style = ttk.Style(self)
@@ -476,10 +546,34 @@ class FullChainFrontend(tk.Tk):
         self.browse_button = ttk.Button(record_row, text="选择", command=self._browse_record)
         self.browse_button.grid(row=0, column=1, padx=(8, 0))
 
-        run = ttk.LabelFrame(parent, text="运行配置", padding=10)
-        run.grid(row=1, column=0, sticky="ew", pady=(12, 0))
-        run.columnconfigure(1, weight=1)
+        chain_api = ttk.LabelFrame(parent, text="链路与 API", padding=10)
+        chain_api.grid(row=1, column=0, sticky="ew", pady=(12, 0))
+        chain_api.columnconfigure(1, weight=1)
 
+        ttk.Label(chain_api, text="链路版本").grid(row=0, column=0, sticky="w")
+        chain_box = ttk.Combobox(
+            chain_api,
+            textvariable=self.chain_profile,
+            values=tuple(CHAIN_PROFILES),
+            state="readonly",
+        )
+        chain_box.grid(row=0, column=1, sticky="ew", padx=(8, 0))
+        chain_box.bind("<<ComboboxSelected>>", lambda _event: self._on_chain_changed())
+
+        ttk.Label(chain_api, text="API Key").grid(row=1, column=0, sticky="w", pady=(8, 0))
+        ttk.Entry(chain_api, textvariable=self.api_key, show="*").grid(
+            row=1, column=1, sticky="ew", padx=(8, 0), pady=(8, 0)
+        )
+
+        ttk.Label(chain_api, text="API URL").grid(row=2, column=0, sticky="w", pady=(8, 0))
+        ttk.Entry(chain_api, textvariable=self.api_url).grid(row=2, column=1, sticky="ew", padx=(8, 0), pady=(8, 0))
+
+        ttk.Label(chain_api, text="模型").grid(row=3, column=0, sticky="w", pady=(8, 0))
+        ttk.Entry(chain_api, textvariable=self.api_model).grid(row=3, column=1, sticky="ew", padx=(8, 0), pady=(8, 0))
+
+        run = ttk.LabelFrame(parent, text="运行配置", padding=10)
+        run.grid(row=2, column=0, sticky="ew", pady=(12, 0))
+        run.columnconfigure(1, weight=1)
         ttk.Label(run, text="运行 ID").grid(row=0, column=0, sticky="w")
         ttk.Entry(run, textvariable=self.run_id).grid(row=0, column=1, sticky="ew", padx=(8, 0))
         ttk.Button(run, text="新建", command=self._new_run_id).grid(row=0, column=2, padx=(8, 0))
@@ -504,12 +598,17 @@ class FullChainFrontend(tk.Tk):
             row=4, column=1, columnspan=2, sticky="ew", padx=(8, 0), pady=(8, 0)
         )
 
+        ttk.Label(run, text="评价模式").grid(row=5, column=0, sticky="w", pady=(8, 0))
+        ttk.Combobox(run, textvariable=self.eval_mode, values=tuple(EVAL_MODES), state="readonly").grid(
+            row=5, column=1, columnspan=2, sticky="ew", padx=(8, 0), pady=(8, 0)
+        )
+
         ttk.Checkbutton(run, text="跳过评估", variable=self.skip_eval).grid(
-            row=5, column=0, columnspan=3, sticky="w", pady=(8, 0)
+            row=6, column=0, columnspan=3, sticky="w", pady=(8, 0)
         )
 
         buttons = ttk.Frame(parent)
-        buttons.grid(row=2, column=0, sticky="ew", pady=(12, 0))
+        buttons.grid(row=3, column=0, sticky="ew", pady=(12, 0))
         buttons.columnconfigure(0, weight=1)
         self.run_button = ttk.Button(buttons, text="运行完整链路", command=self._start_run, style="Accent.TButton")
         self.run_button.grid(row=0, column=0, sticky="ew")
@@ -517,7 +616,7 @@ class FullChainFrontend(tk.Tk):
         self.stop_button.grid(row=0, column=1, padx=(8, 0))
 
         status = ttk.LabelFrame(parent, text="状态", padding=10)
-        status.grid(row=3, column=0, sticky="ew", pady=(12, 0))
+        status.grid(row=4, column=0, sticky="ew", pady=(12, 0))
         status.columnconfigure(0, weight=1)
         ttk.Label(status, textvariable=self.status, style="Status.TLabel", wraplength=330).grid(row=0, column=0, sticky="ew")
         path_entry = ttk.Entry(status, textvariable=self.output_path, state="readonly")
@@ -531,7 +630,7 @@ class FullChainFrontend(tk.Tk):
             row=0, column=1, sticky="ew", padx=(8, 0)
         )
 
-        parent.rowconfigure(4, weight=1)
+        parent.rowconfigure(5, weight=1)
 
     def _build_results(self, parent: ttk.Frame) -> None:
         parent.rowconfigure(0, weight=1)
@@ -626,6 +725,25 @@ class FullChainFrontend(tk.Tk):
         widget.see(tk.END)
         widget.configure(state=tk.DISABLED)
 
+    def _on_chain_changed(self) -> None:
+        self.output_path.set(str(self._active_output_root()))
+        self.status.set(f"已选择链路：{self.chain_profile.get()}。")
+
+    def _build_env_overrides(self) -> dict[str, str]:
+        env: dict[str, str] = {}
+        key = self.api_key.get().strip()
+        url = self.api_url.get().strip()
+        model = self.api_model.get().strip()
+        if key:
+            env["PURE_JADE_API_KEY"] = key
+            env["LLM_API_KEY"] = key
+        if url:
+            env["PURE_JADE_API_URL"] = url
+            env["LLM_BASE_URL"] = url
+        if model:
+            env["PURE_JADE_API_MODEL"] = model
+            env["LLM_MODEL"] = model
+        return env
     def _validate_run_id(self) -> str | None:
         run_id = self.run_id.get().strip()
         if not run_id:
@@ -637,11 +755,13 @@ class FullChainFrontend(tk.Tk):
         return run_id
 
     def _build_command(self, run_id: str) -> list[str] | None:
-        if not RUNNER_PATH.exists():
-            messagebox.showerror("缺少 runner", f"找不到 runner：\n{RUNNER_PATH}")
+        runner_path = self._active_runner_path()
+        if not runner_path.exists():
+            messagebox.showerror("缺少 runner", f"找不到 runner：\n{runner_path}")
             return None
 
-        command = [sys.executable, "-B", str(RUNNER_PATH), "--run-id", run_id]
+        command = [sys.executable, "-B", str(runner_path), "--run-id", run_id]
+        command.extend(str(value) for value in self._active_chain_config().get("extra_args", []))
         mode = self.source_mode.get()
         if mode in {"continue", "record"}:
             raw_record = self.record_path.get().strip()
@@ -668,6 +788,7 @@ class FullChainFrontend(tk.Tk):
         behavior_mode = selected_option_value(self.behavior_mode.get(), BEHAVIOR_MODES)
         eval_stage = selected_option_value(self.eval_stage.get(), EVAL_STAGES)
         eval_scope = selected_option_value(self.eval_scope.get(), EVAL_SCOPES)
+        eval_mode = selected_option_value(self.eval_mode.get(), EVAL_MODES)
 
         command.extend(["--strategy-mode", strategy_mode])
         command.extend(["--behavior-mode", behavior_mode])
@@ -681,6 +802,8 @@ class FullChainFrontend(tk.Tk):
         else:
             command.extend(["--eval-stage", eval_stage])
             command.extend(["--eval-scope", eval_scope])
+            if self._active_chain_config().get("supports_eval_mode"):
+                command.extend(["--eval-mode", eval_mode])
 
         return command
 
@@ -695,7 +818,7 @@ class FullChainFrontend(tk.Tk):
         if command is None:
             return
 
-        self.current_output_dir = OUTPUT_ROOT / run_id
+        self.current_output_dir = self._active_output_root() / run_id
         self.output_path.set("等待 runner 输出 summary 路径...")
         for name in ("总览", "对话日志", "状态卡", "策略卡", "行为卡", "评估", "全对话复盘", "汇总 JSON"):
             self._set_view(name, "")
@@ -706,7 +829,12 @@ class FullChainFrontend(tk.Tk):
         self.run_button.configure(state=tk.DISABLED)
         self.stop_button.configure(state=tk.NORMAL)
 
-        self.worker = threading.Thread(target=self._run_worker, args=(command, self.current_output_dir), daemon=True)
+        env_overrides = self._build_env_overrides()
+        self.worker = threading.Thread(
+            target=self._run_worker,
+            args=(command, self.current_output_dir, self._active_output_root(), env_overrides),
+            daemon=True,
+        )
         self.worker.start()
 
     def _stop_run(self) -> None:
@@ -715,7 +843,13 @@ class FullChainFrontend(tk.Tk):
             self.status.set("正在停止...")
             process.terminate()
 
-    def _run_worker(self, command: list[str], output_dir: Path) -> None:
+    def _run_worker(
+        self,
+        command: list[str],
+        output_dir: Path,
+        output_root: Path,
+        env_overrides: dict[str, str],
+    ) -> None:
         creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         summary_path: Path | None = None
         try:
@@ -729,6 +863,7 @@ class FullChainFrontend(tk.Tk):
                 errors="replace",
                 bufsize=1,
                 creationflags=creationflags,
+                env={**os.environ, **env_overrides},
             )
             assert self.process.stdout is not None
             for line in self.process.stdout:
@@ -738,7 +873,10 @@ class FullChainFrontend(tk.Tk):
                         summary_path = Path(raw_summary)
                 self.events.put(("log", line))
             code = self.process.wait()
-            self.events.put(("finished", {"code": code, "output_dir": output_dir, "summary_path": summary_path}))
+            self.events.put((
+                "finished",
+                {"code": code, "output_dir": output_dir, "summary_path": summary_path, "output_root": output_root},
+            ))
         except Exception as error:  # noqa: BLE001 - surface UI worker failures.
             self.events.put(("failed", str(error)))
         finally:
@@ -751,21 +889,32 @@ class FullChainFrontend(tk.Tk):
                 if kind == "log":
                     self._append_log(str(payload))
                 elif kind == "finished":
-                    self._finish_run(int(payload["code"]), payload["output_dir"], payload.get("summary_path"))
+                    self._finish_run(
+                        int(payload["code"]),
+                        payload["output_dir"],
+                        payload.get("summary_path"),
+                        payload.get("output_root") or self._active_output_root(),
+                    )
                 elif kind == "failed":
-                    self._finish_run(1, self.current_output_dir, None)
+                    self._finish_run(1, self.current_output_dir, None, self._active_output_root())
                     self._append_log(f"\n界面后台任务错误：{payload}\n")
         except queue.Empty:
             pass
         self.after(100, self._poll_events)
 
-    def _finish_run(self, code: int, output_dir: Path | None, summary_path: Path | None = None) -> None:
+    def _finish_run(
+        self,
+        code: int,
+        output_dir: Path | None,
+        summary_path: Path | None = None,
+        output_root: Path | None = None,
+    ) -> None:
         self.run_button.configure(state=tk.NORMAL)
         self.stop_button.configure(state=tk.DISABLED)
         if summary_path is not None and summary_path.exists():
             output_dir = summary_path.parent
         elif output_dir is not None:
-            found_output_dir = find_run_output_dir(output_dir.name)
+            found_output_dir = find_run_output_dir(output_dir.name, output_root or self._active_output_root())
             if found_output_dir is not None:
                 output_dir = found_output_dir
         if output_dir is None:
@@ -777,8 +926,16 @@ class FullChainFrontend(tk.Tk):
             self._set_view(name, value)
         self.notebook.select(0)
         self.output_path.set(str(output_dir))
-        output_record = output_dir / "conversation_record_v021_chain.json"
-        if output_record.exists():
+        record_candidates = [
+            output_dir / self._active_record_name(),
+            output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v024_chain.json",
+            output_dir / "conversation_record_v023_chain.json",
+            output_dir / "conversation_record_v022_chain.json",
+            output_dir / "conversation_record_v021_chain.json",
+        ]
+        output_record = next((path for path in record_candidates if path.exists()), None)
+        if output_record is not None:
             self.last_record_path = output_record
         if code == 0 and self.last_record_path:
             self.record_path.set(str(self.last_record_path))

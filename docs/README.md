@@ -18,6 +18,8 @@
 - [Schema v0.1](schema/schema-v0.1.md)
 - [Schema v0.2](schema/schema-v0.2.md)
 - [Schema v0.2.1](schema/schema-v0.2.1.md)
+- [Schema v0.2.2](schema/schema-v0.2.2.md)
+- [Schema v0.2.4](schema/schema-v0.2.4.md)
 
 ## 策略决策模块
 
@@ -36,6 +38,7 @@
 
 - [API 接入说明](operations/api-integration.md)
 - [报告目录整理说明](operations/report-organization.md)
+- [硬编码推理规则审计](operations/hard-coded-inference-rules.md)
 
 ## 当前推荐主链路
 
