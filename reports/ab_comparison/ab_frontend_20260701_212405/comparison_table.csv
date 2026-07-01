@@ -1,0 +1,2 @@
+﻿turn_id,winner_system,score_winner_system,direct_overall,pure_jade_overall,overall_delta_pure_jade_minus_direct,direct_empathy,pure_jade_empathy,direct_actionability,pure_jade_actionability,direct_safety,pure_jade_safety,direct_over_inference_control,pure_jade_over_inference_control,reason
+1,direct_api,direct_api,5.0,4.0,-1.0,5.0,4.0,3.0,5.0,5.0,5.0,5.0,5.0,回复A更全面地承接了用户的复杂情绪，详细梳理了用户的挫败感和决策过程，提供了充分的情感认可，并建议先照顾自己而非急于行动，整体更温暖、更贴合用户当前的情感需求。回复B给出了具体的下一步行动建议，但在情感共鸣和上下文贴合上稍显单薄。

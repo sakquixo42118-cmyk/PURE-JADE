@@ -51,6 +51,12 @@ CHAIN_PROFILES = {
         "record_name": "conversation_record_v025_chain.json",
         "supports_eval_mode": True,
     },
+    "v0.2.6 证据内展开版": {
+        "runner": PROJECT_ROOT / "scripts" / "full_chain_v026" / "run_full_chain_v026.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v026",
+        "record_name": "conversation_record_v026_chain.json",
+        "supports_eval_mode": True,
+    },
     "Direct API Baseline（Minimal Support，一次 API）": {
         "runner": PROJECT_ROOT / "scripts" / "direct_api_baseline" / "run_direct_api_baseline.py",
         "output_root": PROJECT_ROOT / "reports" / "direct_api_baseline",
@@ -66,7 +72,7 @@ CHAIN_PROFILES = {
         "extra_args": ["--baseline-mode", "raw"],
     },
 }
-DEFAULT_CHAIN_PROFILE = "v0.2.5 情绪深度与微行动版"
+DEFAULT_CHAIN_PROFILE = "v0.2.6 证据内展开版"
 
 STRATEGY_MODES = {
     "API（真实调用）": "api",
@@ -274,6 +280,7 @@ def build_overview(
         "conversation_record_v023_chain.json",
         "conversation_record_v024_chain.json",
         "conversation_record_v025_chain.json",
+        "conversation_record_v026_chain.json",
         "conversation_record_direct_baseline.json",
         "full_chain_summary.json",
     ):
@@ -327,6 +334,7 @@ def load_result_views(output_dir: Path) -> dict[str, str]:
     if record_path is None:
         fallbacks = [
             output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v026_chain.json",
             output_dir / "conversation_record_v025_chain.json",
             output_dir / "conversation_record_v024_chain.json",
             output_dir / "conversation_record_v023_chain.json",
@@ -981,6 +989,7 @@ class FullChainFrontend(tk.Tk):
         record_candidates = [
             output_dir / self._active_record_name(),
             output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v026_chain.json",
             output_dir / "conversation_record_v025_chain.json",
             output_dir / "conversation_record_v024_chain.json",
             output_dir / "conversation_record_v023_chain.json",
