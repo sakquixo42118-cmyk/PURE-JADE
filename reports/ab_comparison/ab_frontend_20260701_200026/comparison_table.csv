@@ -1,0 +1,5 @@
+﻿turn_id,winner_system,direct_overall,pure_jade_overall,direct_empathy,pure_jade_empathy,direct_actionability,pure_jade_actionability,direct_safety,pure_jade_safety,direct_over_inference_control,pure_jade_over_inference_control,reason
+1,direct_api,5.0,4.0,5.0,4.0,5.0,2.0,5.0,5.0,5.0,5.0,B 更深入共情用户矛盾与失落，并将嫉妒重塑为一种可理解的痛苦，同时提供了具体可行的微小行动建议；A 虽然安全自然，但缺乏下一步帮助，略显单薄。
+2,direct_api,5.0,4.0,5.0,4.0,4.0,2.0,5.0,5.0,5.0,5.0,B 对用户的愤怒与委屈进行了更深度的共情，并提供了具体的暂停动作来缓解情绪，行动性更强；A 虽然安全且简洁，但缺乏下一步支持，整体支持感较弱。
+3,pure_jade,3.0,4.0,4.0,4.0,4.0,3.0,3.0,5.0,2.0,5.0,A用简洁共情和开放提问引导用户聚焦具体经历，安全自然，避免过度推测；B给出多种猜测性原因，虽有框架但易强化外部不公的负面解读，且篇幅过长。
+4,direct_api,4.0,4.0,5.0,4.0,2.0,4.0,4.0,5.0,2.0,5.0,A 深入共情了用户的困惑和不甘，详细拆解了答辩中可能的人际与情境因素，情绪承接饱满，上下文延续了用户对“为什么”的追问；B 虽给出了具体的行动建议（找老师沟通），但情绪支持较浅，未能充分承接用户强烈的疑惑感。A 的推测虽多，但基于常见场景的合理分析，未脱离对话主旨，整体安抚效果更佳。

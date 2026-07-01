@@ -281,7 +281,7 @@ def repeated_opening_score(sentence: str, user_message: str) -> int:
 
 
 def compress_repetitive_opening(text: str, behavior_request: dict[str, Any]) -> tuple[str, bool]:
-    # v0.2.4 keeps natural API wording; local code no longer rewrites empathy openings into canned phrases.
+    # v0.2.5 keeps natural API wording; local code no longer rewrites empathy openings into canned phrases.
     return text, False
     response = text.strip()
     if not response:
@@ -497,7 +497,7 @@ uses_previous_context, context_used。
 
 生成规则：
 1. conversation_id、turn_id、schema_version 必须与目标行为卡版本和策略卡一致。
-2. text_response 只写要发给用户的话，最长 360 字。普通低风险场景通常写 2-4 句、约 80-220 字；不要为了简短而只输出一句。
+2. text_response 只写要发给用户的话，最长 520 字。普通低风险场景通常写 3-6 句、约 180-320 字；不要为了简短而只输出一句。
 3. strategy_realization 必须至少落实 primary_strategy；如果 secondary_strategy 不为 null，也应落实 secondary_strategy。
 4. 每个 strategy_realization.text_span 必须是 text_response 中真实出现的片段。
 5. follow_up_question_count 只能是 0 或 1，并且回复中最多只出现一个问号。
@@ -518,7 +518,8 @@ uses_previous_context, context_used。
 8. 如果策略卡约束提到考试、补考、缓考、教务、老师或辅导员，回复要给出一个不承诺结果的现实联系/确认动作，而不是只说“这种情绪正常”。
 9. 如果 support_intention 是 comfort / affirm / normalize，回复不能只停在肯定和正常化；在不违背策略卡的前提下，补一个很小的稳定动作、温和探索入口或自我评价缓冲。
 10. 如果用户在问“为什么/问题在哪/我不理解”，不要给一串未经证实的原因推测。更好的写法是：先接住困惑和不甘，再给一个帮助具体化的入口，或建议去获得具体反馈。
-11. 对现实压力但低风险的场景，推荐结构是：一句接住情绪 + 一到两句具体下一步 + 一句降低自责或稳定预期的话。
+11. 对现实压力但低风险的场景，推荐结构是：两句接住情绪和意义 + 一到两句轻度重构 + 一到两个微行动或温和探索入口 + 一句降低自责或稳定预期的话。
+12. “微行动”不是沉重建议，也不是直接解决人生问题；它可以是写一句最刺痛的比较、暂停自我审判、少看一次触发源、用一句话向老师/朋友请教、或把一个抽象问题落到具体场景。
 """
 
 
@@ -552,9 +553,10 @@ def behavior_user_prompt(behavior_request: dict[str, Any]) -> str:
 - 避免模板化开头，不要每轮都从“我听到你说/听起来/我能感受到”开始。
 - 可以自然承接情绪，但不要机械重复用户原话。
 - 如果本轮用户在要办法、话术或下一步，直接进入具体帮助。
-- 除安全覆盖外，回复不要过短；通常保持 2-4 句，让它既有温度也有行动感。
+- 除安全覆盖外，回复不要过短；通常保持 3-6 句，让它既有温度也有行动感。
 - 对 comfort / affirm 轮，至少给出一个轻量推进：很小的稳定动作、温和问题、或把自我攻击暂时放下的具体说法；不要只说“你不差/这很正常”。
 - 对 action 轮，先回应用户最强的“不理解、委屈、不甘或自我怀疑”，再给现实下一步；不要只给任务。
+- 允许适度展开，但不要像长文分析；目标是比 v0.24 更有情绪深度和具体小动作，同时保持安全、克制、少推测。
 - 安全场景不要套固定模板；根据风险类型回应。现实冲突/暴力风险可以问一个安全确认问题，自伤风险不能追问方法、工具、地点或计划细节。
 """
 
@@ -802,8 +804,8 @@ def validate_behavior_card(
     if not isinstance(response, str) or not response.strip():
         check.error("text_response must be a non-empty string")
         response = ""
-    elif len(response) > 360:
-        check.error("text_response must be at most 360 characters")
+    elif len(response) > 520:
+        check.error("text_response must be at most 520 characters")
 
     if card.get("tone_style") not in ALLOWED_TONE_STYLES:
         check.error(f"invalid tone_style: {card.get('tone_style')!r}")

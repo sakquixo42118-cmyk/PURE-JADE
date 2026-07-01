@@ -45,6 +45,12 @@ CHAIN_PROFILES = {
         "record_name": "conversation_record_v024_chain.json",
         "supports_eval_mode": True,
     },
+    "v0.2.5 情绪深度与微行动版": {
+        "runner": PROJECT_ROOT / "scripts" / "full_chain_v025" / "run_full_chain_v025.py",
+        "output_root": PROJECT_ROOT / "reports" / "full_chain_v025",
+        "record_name": "conversation_record_v025_chain.json",
+        "supports_eval_mode": True,
+    },
     "Direct API Baseline（Minimal Support，一次 API）": {
         "runner": PROJECT_ROOT / "scripts" / "direct_api_baseline" / "run_direct_api_baseline.py",
         "output_root": PROJECT_ROOT / "reports" / "direct_api_baseline",
@@ -60,7 +66,7 @@ CHAIN_PROFILES = {
         "extra_args": ["--baseline-mode", "raw"],
     },
 }
-DEFAULT_CHAIN_PROFILE = "v0.2.1 当前版（稳定/规则较强）"
+DEFAULT_CHAIN_PROFILE = "v0.2.5 情绪深度与微行动版"
 
 STRATEGY_MODES = {
     "API（真实调用）": "api",
@@ -267,6 +273,7 @@ def build_overview(
         "conversation_record_v022_chain.json",
         "conversation_record_v023_chain.json",
         "conversation_record_v024_chain.json",
+        "conversation_record_v025_chain.json",
         "conversation_record_direct_baseline.json",
         "full_chain_summary.json",
     ):
@@ -320,6 +327,7 @@ def load_result_views(output_dir: Path) -> dict[str, str]:
     if record_path is None:
         fallbacks = [
             output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v025_chain.json",
             output_dir / "conversation_record_v024_chain.json",
             output_dir / "conversation_record_v023_chain.json",
             output_dir / "conversation_record_v022_chain.json",
@@ -407,7 +415,7 @@ class FullChainFrontend(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("PURE-JADE 完整链路")
-        self.geometry("1240x800")
+        self.geometry("1280x860")
         self.minsize(1040, 680)
         self.configure(bg=BG)
 
@@ -495,13 +503,57 @@ class FullChainFrontend(tk.Tk):
         root = ttk.PanedWindow(shell, orient=tk.HORIZONTAL)
         root.grid(row=1, column=0, sticky="nsew")
 
-        controls = ttk.Frame(root, padding=12, style="Panel.TFrame")
+        controls_shell = ttk.Frame(root, style="Panel.TFrame")
         results = ttk.Frame(root, padding=(12, 0, 0, 0), style="Header.TFrame")
-        root.add(controls, weight=0)
+        root.add(controls_shell, weight=0)
         root.add(results, weight=1)
 
+        controls_shell.rowconfigure(0, weight=1)
+        controls_shell.columnconfigure(0, weight=1)
+        controls_canvas = tk.Canvas(
+            controls_shell,
+            width=380,
+            borderwidth=0,
+            highlightthickness=0,
+            background=PANEL,
+        )
+        controls_scrollbar = ttk.Scrollbar(controls_shell, orient=tk.VERTICAL, command=controls_canvas.yview)
+        controls_canvas.configure(yscrollcommand=controls_scrollbar.set)
+        controls_canvas.grid(row=0, column=0, sticky="nsew")
+        controls_scrollbar.grid(row=0, column=1, sticky="ns")
+
+        controls = ttk.Frame(controls_canvas, padding=12, style="Panel.TFrame")
+        controls_window = controls_canvas.create_window((0, 0), window=controls, anchor="nw")
+        controls.bind(
+            "<Configure>",
+            lambda _event: controls_canvas.configure(scrollregion=controls_canvas.bbox("all")),
+        )
+        controls_canvas.bind(
+            "<Configure>",
+            lambda event: controls_canvas.itemconfigure(controls_window, width=event.width),
+        )
+        controls_canvas.bind(
+            "<MouseWheel>",
+            lambda event: controls_canvas.yview_scroll(-1 if event.delta > 0 else 1, "units"),
+            add="+",
+        )
+
         self._build_controls(controls)
+        self._bind_control_scroll(controls, controls_canvas)
         self._build_results(results)
+
+    def _bind_control_scroll(self, widget: tk.Widget, canvas: tk.Canvas) -> None:
+        def scroll(event: tk.Event) -> str:
+            delta = getattr(event, "delta", 0)
+            if delta:
+                canvas.yview_scroll(-1 if delta > 0 else 1, "units")
+            return "break"
+
+        skip_types = (tk.Text, tk.Entry, ttk.Entry, ttk.Combobox)
+        if not isinstance(widget, skip_types):
+            widget.bind("<MouseWheel>", scroll, add="+")
+        for child in widget.winfo_children():
+            self._bind_control_scroll(child, canvas)
 
     def _build_controls(self, parent: ttk.Frame) -> None:
         parent.columnconfigure(0, weight=1)
@@ -929,6 +981,7 @@ class FullChainFrontend(tk.Tk):
         record_candidates = [
             output_dir / self._active_record_name(),
             output_dir / "conversation_record_direct_baseline.json",
+            output_dir / "conversation_record_v025_chain.json",
             output_dir / "conversation_record_v024_chain.json",
             output_dir / "conversation_record_v023_chain.json",
             output_dir / "conversation_record_v022_chain.json",

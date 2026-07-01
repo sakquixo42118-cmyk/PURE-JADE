@@ -30,10 +30,10 @@ DEFAULT_RECORD = Path("examples/conversation-record-v0.2.1.json")
 DEFAULT_REFERENCES = Path("examples/strategy-references-v0.1.json")
 DEFAULT_ENV_FILE = Path(".env")
 
-REQUEST_SCHEMA_VERSION = "0.2.4"
+REQUEST_SCHEMA_VERSION = "0.2.5"
 CARD_SCHEMA_VERSION = "0.2"
-PIPELINE_SCOPE = "research_content_2_strategy_decision_multiturn_v024"
-PIPELINE_VERSION = "strategy_pipeline_v0.2.4"
+PIPELINE_SCOPE = "research_content_2_strategy_decision_multiturn_v025"
+PIPELINE_VERSION = "strategy_pipeline_v0.2.5"
 
 REQUIRED_STRATEGY_FIELDS_V021 = base.REQUIRED_STRATEGY_FIELDS | {
     "state_basis_turn_id",
@@ -401,7 +401,7 @@ def practical_constraints(strategy_request: dict[str, Any]) -> list[str]:
     context = strategy_request.get("practical_context")
     domain = context.get("consequence_domain") if isinstance(context, dict) else None
     constraints = [
-        "回复目标应包含自然情绪承接、低负担现实下一步和温和收束，通常 2-4 句，不要压缩成一句",
+        "回复目标应包含自然情绪承接、低负担现实下一步和温和收束，通常 3-5 句，不要压缩成一句",
         "下游回复最多提出一个问题，且问题必须服务于下一步行动",
         "不承诺结果，不编造具体机构政策",
     ]
@@ -412,6 +412,34 @@ def practical_constraints(strategy_request: dict[str, Any]) -> list[str]:
     else:
         constraints.append("现实下一步要具体、可选择、低负担")
     return constraints
+
+
+def quality_constraints_for_decision(decision: dict[str, Any]) -> list[str]:
+    constraints = list(base.strategy_constraints(decision))
+    support_intention = decision.get("support_intention")
+    response_timing = decision.get("response_timing")
+    if support_intention in {"comfort", "affirm", "normalize"}:
+        constraints.append("回复应包含情绪承接、轻度重构和一个微行动或温和探索入口；微行动不是沉重建议")
+        constraints.append("不要只输出肯定或正常化；应帮助用户从自我攻击中稍微退一步")
+    if response_timing == "offer_next_step" or decision.get("primary_strategy") == "Providing Suggestions":
+        constraints.append("行动建议前要充分承接用户最强的困惑、不甘、委屈或自我怀疑")
+        constraints.append("下一步最多 1-2 个，要求低负担、现实可执行，不要写成长篇方案")
+    return constraints
+
+
+def quality_prohibited_actions_for_decision(decision: dict[str, Any]) -> list[str]:
+    prohibited = list(base.prohibited_actions(decision))
+    support_intention = decision.get("support_intention")
+    if support_intention in {"comfort", "affirm", "normalize"}:
+        filtered = []
+        for item in prohibited:
+            if item.strip() in {"建议", "提问未知信息", "直接给出建议"}:
+                continue
+            filtered.append(item)
+        prohibited = filtered
+        prohibited.append("不要给沉重方案、说教式建议或过早要求用户立刻解决根本问题")
+        prohibited.append("不要禁止微行动、温和探索入口或自我评价缓冲")
+    return prohibited
 
 
 def practical_prohibited_actions() -> list[str]:
@@ -454,11 +482,7 @@ def rule_strategy_decision_card(
         "secondary_strategy": decision["secondary_strategy"],
         "response_timing": timing,
         "response_intensity": base.response_intensity(user_state, timing),
-        "response_goal": (
-            "先稳定用户的强烈情绪，再用 2-4 句提供不承诺结果的现实补救下一步，并以温和语气收束。"
-            if practical_context_is_urgent(strategy_request)
-            else base.response_goal(decision)
-        ),
+        "response_goal": response_goal_v025(decision, strategy_request),
         "reason": reason_from_user_state(
             user_state,
             selected_ids,
@@ -467,12 +491,23 @@ def rule_strategy_decision_card(
         "esconv_example_ids": selected_ids,
         "constraints": practical_constraints(strategy_request)
         if practical_context_is_urgent(strategy_request)
-        else base.strategy_constraints(decision),
+        else quality_constraints_for_decision(decision),
         "prohibited_actions": practical_prohibited_actions()
         if practical_context_is_urgent(strategy_request)
-        else base.prohibited_actions(decision),
+        else quality_prohibited_actions_for_decision(decision),
         "safety_override": safety_override,
     }
+
+
+def response_goal_v025(decision: dict[str, Any], strategy_request: dict[str, Any]) -> str:
+    if practical_context_is_urgent(strategy_request):
+        return "先稳定用户的强烈情绪，再用 3-5 句提供不承诺结果的现实补救下一步，并以温和语气收束。"
+    support_intention = decision.get("support_intention")
+    if support_intention in {"comfort", "affirm", "normalize"}:
+        return "用更饱满的情绪承接和轻度重构回应用户，再给一个很小的稳定动作或温和探索入口，帮助用户从自我攻击中稍微退一步。"
+    if decision.get("response_timing") == "offer_next_step":
+        return "先充分承接用户的核心困惑、不甘或自我怀疑，再给 1-2 个低负担、可执行的下一步，并避免编造或过度推测。"
+    return base.response_goal(decision)
 
 
 def mock_strategy_decision_card(turn_record: dict[str, Any]) -> dict[str, Any]:
@@ -480,11 +515,11 @@ def mock_strategy_decision_card(turn_record: dict[str, Any]) -> dict[str, Any]:
     return copy.deepcopy(expected) if isinstance(expected, dict) else {}
 
 
-def strategy_system_prompt_v024() -> str:
+def strategy_system_prompt_v025() -> str:
     return """你是 PURE-JADE 项目的共情策略决策模块。
 你的任务是根据当前用户输入、最新用户状态卡和可选 ESConv 策略参考案例摘要，输出一张共情策略决策卡。
 
-你只负责第二部分策略决策，不生成最终回复，不重新总结完整历史。v0.2.4 的输入会额外提供 practical_context，用来保留现实后果、紧急度和可行动性，不要忽略它。
+你只负责第二部分策略决策，不生成最终回复，不重新总结完整历史。v0.2.5 的输入会额外提供 practical_context，用来保留现实后果、紧急度和可行动性，不要忽略它。
 必须遵守以下规则：
 1. 只输出一个合法 JSON 对象，不要输出 Markdown、解释文字或代码块。
 2. 输出字段必须符合 Schema v0.2 的 strategy_decision_card。
@@ -510,6 +545,8 @@ def strategy_system_prompt_v024() -> str:
 9. response_timing 应服务于当轮需要：需要立即支持就 respond_now，需要行动就 offer_next_step，只有信息确实不足时才 ask_clarification。
 10. 如果 practical_context.real_world_consequence=true 且 practical_urgency 为 medium/high，不能只做情绪认可。应选择 advise 或 inform，primary/secondary 至少包含 Providing Suggestions 或 Information，response_timing 使用 offer_next_step；目标是“自然承接情绪 + 1-2 个低负担现实动作 + 温和收束”，不要把下游压成一句话。
 11. 对考试/DDL/报名/预约等现实后果事件，正确边界是“不编造政策、不承诺结果、不责备用户”，不是“不能提供任何具体行动建议”。
+12. v0.25 的核心目标是提升最终回复质量：在保持安全、克制、少推测的前提下，增加情绪深度、轻度重构、微行动和陪伴感。
+13. 微行动不是沉重建议。它可以是“写下一句最刺痛的比较”“暂停自我审判一分钟”“关掉触发源三天”“把抽象问题落到一个具体场景”“用一句话向老师/朋友请求反馈”等。
 
 表达约束：
 1. response_goal 不要写“先复述用户处境”“先表达听到”这类会导致下游机械复读的目标。
@@ -521,7 +558,7 @@ def strategy_system_prompt_v024() -> str:
 7. 对现实紧急/行政后果事件，不要在 prohibited_actions 或 constraints 中禁止“具体行动建议”“补考/缓考/教务/老师/辅导员”等现实帮助。可以限制为“只给一个下一步，避免吓人和过度承诺”。"""
 
 
-def strategy_user_prompt_v024(strategy_request: dict[str, Any]) -> str:
+def strategy_user_prompt_v025(strategy_request: dict[str, Any]) -> str:
     references = strategy_request.get("strategy_references")
     allowed_reference_ids = [
         item.get("example_id") for item in references if isinstance(item, dict) and item.get("example_id")
@@ -531,8 +568,17 @@ def strategy_user_prompt_v024(strategy_request: dict[str, Any]) -> str:
 [strategy_decision_request]
 {compact_json(strategy_request)}
 
-[v0.2.4 practical_context 说明]
+[v0.2.5 practical_context 说明]
 如果 practical_context.real_world_consequence=true 且 practical_urgency 为 medium/high，请采用“自然情绪承接 + 1-2 个现实下一步 + 温和收束”的策略。不要把禁止项写成“不能提供补考/具体行动建议”；应禁止的是编造政策、保证结果或责备用户。
+
+[v0.2.5 回复质量目标]
+普通低风险情绪支持不应只追求简短。请让 response_goal 和 constraints 引导下游生成 3-6 句、约 180-320 字的回复，包含：
+1. 情绪承接：准确接住用户最强的感受。
+2. 轻度重构：帮助用户把自我攻击、嫉妒或挫败稍微换一个角度看。
+3. 微行动：提供一个很小、今晚或此刻能做的动作，或一个温和探索入口。
+4. 收束：降低自责，稳定预期。
+
+不要在 prohibited_actions 中写单独的“建议”“提问未知信息”来禁止微行动；如果需要限制，应写“不要给沉重方案、说教式建议或过早要求用户解决根本问题”。
 
 [输出字段]
 - conversation_id
@@ -746,8 +792,8 @@ def api_strategy_decision_card(
     use_references: bool,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     messages = [
-        {"role": "system", "content": strategy_system_prompt_v024()},
-        {"role": "user", "content": strategy_user_prompt_v024(strategy_request)},
+        {"role": "system", "content": strategy_system_prompt_v025()},
+        {"role": "user", "content": strategy_user_prompt_v025(strategy_request)},
     ]
     attempts: list[dict[str, Any]] = []
     latest_card: dict[str, Any] = {}
